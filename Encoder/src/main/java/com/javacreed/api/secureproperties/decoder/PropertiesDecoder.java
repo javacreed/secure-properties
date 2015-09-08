@@ -20,7 +20,6 @@
 package com.javacreed.api.secureproperties.decoder;
 
 import java.util.Iterator;
-import java.util.List;
 
 import com.javacreed.api.secureproperties.encoder.EncoderException;
 import com.javacreed.api.secureproperties.model.PropertyEntry;
@@ -28,7 +27,19 @@ import com.javacreed.api.secureproperties.model.PropertyEntry;
 /**
  */
 public interface PropertiesDecoder {
-  void decode(Iterable<PropertyEntry> propertiesEntries) throws EncoderException;
 
-  List<PropertyEntry> decode(Iterator<PropertyEntry> propertiesEntries) throws EncoderException;
+  /**
+   *
+   * @param propertiesEntries
+   * @throws EncoderException
+   */
+  DecodedProperties decode(Iterable<PropertyEntry> propertiesEntries) throws EncoderException;
+
+  /**
+   *
+   * @param propertiesEntries
+   * @return
+   * @throws EncoderException
+   */
+  DecodedProperties decode(Iterator<PropertyEntry> propertiesEntries) throws EncoderException;
 }

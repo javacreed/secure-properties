@@ -29,6 +29,7 @@ import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
 import com.javacreed.api.secureproperties.writer.AbstractPropertyEntryWriter;
 
 /**
+ * TODO: we should not allow write before begin
  */
 public class DbPropertyEntryWriter extends AbstractPropertyEntryWriter {
 

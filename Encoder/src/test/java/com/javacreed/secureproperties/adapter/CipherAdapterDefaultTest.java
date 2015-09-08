@@ -17,29 +17,26 @@
  * limitations under the License.
  * #L%
  */
-package com.javacreed.api.secureproperties.encoder;
+package com.javacreed.secureproperties.adapter;
 
-import java.util.Iterator;
+import org.junit.Assert;
+import org.junit.Test;
 
-import com.javacreed.api.secureproperties.model.PropertyEntry;
+import com.javacreed.api.secureproperties.adapter.CipherAdapter;
 
 /**
  */
-public interface PropertiesEncoder {
+public class CipherAdapterDefaultTest {
 
   /**
    *
-   * @param propertiesEntries
-   * @return
-   * @throws EncoderException
    */
-  EncodedProperties encode(Iterable<PropertyEntry> propertiesEntries) throws EncoderException;
-
-  /**
-   *
-   * @param propertiesEntries
-   * @return
-   * @throws EncoderException
-   */
-  EncodedProperties encode(Iterator<PropertyEntry> propertiesEntries) throws EncoderException;
+  @Test
+  public void test() {
+    final CipherAdapter adapter = new CipherAdapter();
+    final String encoded = adapter.encode("hello");
+    Assert.assertNotNull(encoded);
+    Assert.assertNotEquals("hello", encoded);
+    Assert.assertEquals("hello", adapter.decode(encoded));
+  }
 }

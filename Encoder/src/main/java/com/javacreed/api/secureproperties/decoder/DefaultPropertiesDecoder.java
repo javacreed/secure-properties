@@ -19,6 +19,7 @@
  */
 package com.javacreed.api.secureproperties.decoder;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,40 +28,99 @@ import java.util.Objects;
 import com.javacreed.api.secureproperties.encoder.EncoderException;
 import com.javacreed.api.secureproperties.model.PropertyEntry;
 
+/**
+ *
+ */
 public class DefaultPropertiesDecoder implements PropertiesDecoder {
 
-  private PropertyDecoder decoder = new DefaultPropertyDecoder("javacreed");
+  private static class DefaultDecodedProperties implements DecodedProperties {
 
-  @Override
-  public void decode(final Iterable<PropertyEntry> propertiesEntries) throws EncoderException {
-    decode(propertiesEntries.iterator());
+    private int decoded;
+    private final List<PropertyEntry> entries = new LinkedList<>();
+    private final List<PropertyEntry> unmodifiable = Collections.unmodifiableList(entries);
+
+    @Override
+    public Iterable<PropertyEntry> getEntries() {
+      return unmodifiable;
+    }
+
+    @Override
+    public int getNumberOfDecodedProperties() {
+      return decoded;
+    }
+
+    @Override
+    public boolean wereEncoded() {
+      return decoded > 0;
+    }
+  }
+
+  /** The properties decoder (which will never be {@code null}) */
+  private PropertyDecoder decoder;
+
+  /**
+   * Creates an instance of this class with the default configuration
+   */
+  public DefaultPropertiesDecoder() {
+    this("javacreed");
+  }
+
+  /**
+   *
+   * @param decoder
+   * @throws NullPointerException
+   */
+  public DefaultPropertiesDecoder(final PropertyDecoder decoder) throws NullPointerException {
+    setDecoder(decoder);
+  }
+
+  /**
+   *
+   * @param key
+   */
+  public DefaultPropertiesDecoder(final String key) {
+    this(new DefaultPropertyDecoder(key));
   }
 
   @Override
-  public List<PropertyEntry> decode(final Iterator<PropertyEntry> propertiesEntries) throws EncoderException {
-    if (decoder == null) {
-      throw new IllegalStateException("Decoder is not set");
-    }
+  public DecodedProperties decode(final Iterable<PropertyEntry> propertiesEntries) throws EncoderException {
+    return decode(propertiesEntries.iterator());
+  }
 
-    final List<PropertyEntry> decodedProperties = new LinkedList<>();
-
+  @Override
+  public DecodedProperties decode(final Iterator<PropertyEntry> propertiesEntries) throws EncoderException {
+    final DefaultDecodedProperties decoded = new DefaultDecodedProperties();
     try {
       while (propertiesEntries.hasNext()) {
         final PropertyEntry entry = propertiesEntries.next();
-        final PropertyEntry encodedEntry = decoder.decode(entry);
-        decodedProperties.add(encodedEntry);
+        final PropertyEntry decodedEntry = decoder.decode(entry);
+        decoded.entries.add(decodedEntry);
+        if (entry != decodedEntry) {
+          decoded.decoded++;
+        }
       }
     } catch (final RuntimeException e) {
       throw EncoderException.launder(e);
     }
 
-    return decodedProperties;
+    return decoded;
   }
 
+  /**
+   *
+   * @param decoder
+   * @throws NullPointerException
+   */
   public void setDecoder(final PropertyDecoder decoder) throws NullPointerException {
     this.decoder = Objects.requireNonNull(decoder);
   }
 
+  /**
+   *
+   * @param decoder
+   * @return
+   * @throws NullPointerException
+   */
   public DefaultPropertiesDecoder use(final PropertyDecoder decoder) throws NullPointerException {
     setDecoder(decoder);
     return this;

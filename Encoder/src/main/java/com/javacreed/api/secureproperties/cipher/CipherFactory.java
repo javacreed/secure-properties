@@ -31,7 +31,7 @@ public interface CipherFactory {
 
   /**
    * Creates a ciphered stream wrapping the given {@code in} (input stream)
-   * 
+   *
    * @param in
    *          the input stream to be wrapped into a ciphered stream (which cannot be {@code null})
    * @return a ciphered stream wrapping the given {@code in} (input stream)
@@ -45,7 +45,7 @@ public interface CipherFactory {
 
   /**
    * Creates a ciphered stream wrapping the given {@code out} (output stream)
-   * 
+   *
    * @param out
    *          the output stream to be wrapped into a ciphered stream (which cannot be {@code null})
    * @return a ciphered stream wrapping the given {@code out} (output stream)
