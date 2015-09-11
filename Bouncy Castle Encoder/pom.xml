@@ -1,47 +1,48 @@
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.javacreed.api</groupId>
-        <artifactId>secure-properties-parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../Parent/pom.xml</relativePath>
-    </parent>
+	<parent>
+		<groupId>com.javacreed.api</groupId>
+		<artifactId>secure-properties-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../Parent/pom.xml</relativePath>
+	</parent>
 
-    <artifactId>secure-properties-bouncy-castle-encoder</artifactId>
-    <packaging>bundle</packaging>
+	<artifactId>secure-properties-bouncy-castle-encoder</artifactId>
+	<packaging>bundle</packaging>
 
-    <name>JavaCreed Secure Properties Bouncy Castle Encoder</name>
-    <url>http://www.javacreed.com/${project.artifactId}/</url>
+	<name>JavaCreed Secure Properties Bouncy Castle Encoder</name>
+	<url>http://www.javacreed.com/${project.artifactId}/</url>
 
-    <build>
-        <plugins>
-        <plugin>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>maven-bundle-plugin</artifactId>
-        </plugin>
-        </plugins>
-    </build>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.52</version>
-        </dependency>
-        <dependency>
-            <groupId>com.javacreed.api</groupId>
-            <artifactId>secure-properties-encoder</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.52</version>
+		</dependency>
+		<dependency>
+			<groupId>com.javacreed.api</groupId>
+			<artifactId>secure-properties-encoder</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.12</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.12</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>

@@ -29,15 +29,22 @@ import com.javacreed.api.secureproperties.cipher.CipherFactory;
 import com.javacreed.api.secureproperties.encoder.EncoderException;
 
 /**
+ * Provides common/utilities methods related to ciphers encoding and decoding.
+ *
+ * @author Albert Attard
  */
 public class CipherUtils {
 
   /**
+   * Decodes the given Hex text ({@code encodedText}) using the given {@code cipherFactory}.
    *
    * @param encodedText
+   *          the encoded Hex text (which cannot be {@code null})
    * @param cipherFactory
-   * @return
+   *          the cipher factory which will be used to create the required input stream (which cannot be {@code null})
+   * @return the decoded/plain text (which will never be {@code null})
    * @throws EncoderException
+   *           if an error occurs during the decoding
    */
   public static String decode(final String encodedText, final CipherFactory cipherFactory) throws EncoderException {
     try (ByteArrayInputStream in = new ByteArrayInputStream(HexUtils.toByteArray(encodedText));
@@ -55,11 +62,15 @@ public class CipherUtils {
   }
 
   /**
+   * Encodes the given ({@code plainText}) using the given {@code cipherFactory}.
    *
    * @param plainText
+   *          the plain text (which will never be {@code null})
    * @param cipherFactory
-   * @return
+   *          the cipher factory which will be used to create the required input stream (which cannot be {@code null})
+   * @return the encoded hex text (which will never be {@code null})
    * @throws EncoderException
+   *           if an error occurs during the encoding
    */
   public static String encode(final String plainText, final CipherFactory cipherFactory) throws EncoderException {
     try (ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -73,7 +84,7 @@ public class CipherUtils {
   }
 
   /**
-   *
+   * This is a utilities class and does not need to be initialised
    */
   private CipherUtils() {}
 }

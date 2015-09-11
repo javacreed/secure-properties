@@ -44,5 +44,5 @@ public interface DecodedProperties {
    *
    * @return {@code true} if at least one property was decoded, {@code false} otherwise
    */
-  boolean wereEncoded();
+  boolean wereDecoded();
 }

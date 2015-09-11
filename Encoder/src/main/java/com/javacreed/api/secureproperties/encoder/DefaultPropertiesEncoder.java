@@ -82,7 +82,7 @@ public class DefaultPropertiesEncoder implements PropertiesEncoder {
 
   @Override
   public EncodedProperties encode(final Iterator<PropertyEntry> propertiesEntries) throws EncoderException,
-  IllegalStateException {
+      IllegalStateException {
     final DefaultEncodedProperties encodedProperties = new DefaultEncodedProperties();
 
     while (propertiesEntries.hasNext()) {

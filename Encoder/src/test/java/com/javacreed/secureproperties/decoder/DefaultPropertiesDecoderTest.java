@@ -37,11 +37,14 @@ public class DefaultPropertiesDecoderTest {
   @Test
   public void test() throws IOException {
     final List<PropertyEntry> properties = ReaderPropertyParser.readAndClose(getClass().getResourceAsStream(
-        "/samples/properties/file.001.properties"));
+        "/samples/properties/file.002.properties"));
 
     final DefaultPropertiesDecoder propertiesDecoder = new DefaultPropertiesDecoder();
     final DecodedProperties decoded = propertiesDecoder.decode(properties);
     Assert.assertNotNull(decoded);
+    Assert.assertTrue(decoded.wereDecoded());
+    Assert.assertEquals(1, decoded.getNumberOfDecodedProperties());
+    Assert.assertNotNull(decoded.getEntries());
   }
 
 }

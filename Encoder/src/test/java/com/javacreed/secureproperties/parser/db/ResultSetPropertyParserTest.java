@@ -50,7 +50,7 @@ public class ResultSetPropertyParserTest {
     dbHelper = DbHelper.create();
     dbHelper.execute("DROP TABLE IF EXISTS `test_properties`");
     dbHelper
-    .execute("CREATE TABLE `test_properties` (`name` VARCHAR(64) NOT NULL, `value` VARCHAR(128) NOT NULL, PRIMARY KEY(`name`))");
+        .execute("CREATE TABLE `test_properties` (`name` VARCHAR(64) NOT NULL, `value` VARCHAR(128) NOT NULL, PRIMARY KEY(`name`))");
   }
 
   @Test

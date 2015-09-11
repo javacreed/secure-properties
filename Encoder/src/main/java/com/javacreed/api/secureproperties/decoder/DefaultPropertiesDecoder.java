@@ -50,7 +50,7 @@ public class DefaultPropertiesDecoder implements PropertiesDecoder {
     }
 
     @Override
-    public boolean wereEncoded() {
+    public boolean wereDecoded() {
       return decoded > 0;
     }
   }
