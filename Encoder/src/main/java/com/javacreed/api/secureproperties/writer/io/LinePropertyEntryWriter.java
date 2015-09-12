@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,14 +26,23 @@ import java.util.Objects;
 import com.javacreed.api.secureproperties.encoder.EncodedProperties;
 import com.javacreed.api.secureproperties.encoder.EncoderException;
 import com.javacreed.api.secureproperties.model.BasicPropertyEntry;
+import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
+import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.PropertyEntry;
 import com.javacreed.api.secureproperties.writer.AbstractPropertyEntryWriter;
 
 /**
+ *
+ * @author Albert Attard
  */
 public class LinePropertyEntryWriter extends AbstractPropertyEntryWriter {
 
+  /**
+   *
+   * @author Albert Attard
+   *
+   */
   private class BasicHandler extends AbstractHandler<BasicPropertyEntry> {
 
     private BasicHandler() {
@@ -46,6 +55,30 @@ public class LinePropertyEntryWriter extends AbstractPropertyEntryWriter {
     }
   }
 
+  /**
+   *
+   * @author Albert Attard
+   *
+   */
+  private class EncodedNameValuePairHandler extends AbstractHandler<EncodedNameValuePropertyEntry> {
+
+    private EncodedNameValuePairHandler() {
+      super(EncodedNameValuePropertyEntry.class);
+    }
+
+    @Override
+    public void handle(final EncodedNameValuePropertyEntry entry) throws Exception {
+      buffer.append(entry.getName());
+      buffer.append("={enc}");
+      buffer.append(entry.getValue());
+    }
+  }
+
+  /**
+   *
+   * @author Albert Attard
+   *
+   */
   private class NameValuePairHandler extends AbstractHandler<NameValuePropertyEntry> {
 
     private NameValuePairHandler() {
@@ -60,7 +93,33 @@ public class LinePropertyEntryWriter extends AbstractPropertyEntryWriter {
     }
   }
 
+  /**
+   *
+   * @author Albert Attard
+   *
+   */
+  private class PlainTextNameValuePairHandler extends AbstractHandler<PlainTextNameValuePropertyEntry> {
+
+    private PlainTextNameValuePairHandler() {
+      super(PlainTextNameValuePropertyEntry.class);
+    }
+
+    @Override
+    public void handle(final PlainTextNameValuePropertyEntry entry) throws Exception {
+      buffer.append(entry.getName());
+      buffer.append("={pln}");
+      buffer.append(entry.getValue());
+    }
+  }
+
+  /**
+   *
+   * @param writer
+   * @param properties
+   * @throws Exception
+   */
   public static void writeAndClose(final Writer writer, final EncodedProperties properties) throws Exception {
+    // TODO: this should be moved elsewhere
     final LinePropertyEntryWriter lpew = new LinePropertyEntryWriter(writer);
     try {
       lpew.begin();
@@ -75,29 +134,27 @@ public class LinePropertyEntryWriter extends AbstractPropertyEntryWriter {
     }
   }
 
-  // public boolean accepts(PropertyEntry entry){
-  // // TODO: need tro change this as it's not good OOP
-  // return (entry instanceof CommentPropertyEntry) || (entry instanceof BlankPropertyEntry) || (entry instanceof
-  // NameValuePropertyEntry);
-  // }
-
-  // /**
-  // *
-  // * @param writer
-  // * @throws NullPointerException
-  // */
-  // public void setWriter(Writer writer) throws NullPointerException {
-  // this.writer = Objects.requireNonNull(writer);
-  // }
-
+  /** */
   private final Writer writer;
 
+  /** */
   private StringBuilder buffer;
 
-  public LinePropertyEntryWriter(final Writer writer) {
+  /**
+   *
+   * @param writer
+   * @throws NullPointerException
+   *           if the given {@code writer} is {@code null}
+   */
+  public LinePropertyEntryWriter(final Writer writer) throws NullPointerException {
     this.writer = Objects.requireNonNull(writer);
 
-    // Register the handler. TODO: This should be done post construct
+    /*
+     * Register the handler. Ideally this is done in a post construct method but the classes created below do not access
+     * the hosting class.
+     */
+    registerHandler(new PlainTextNameValuePairHandler());
+    registerHandler(new EncodedNameValuePairHandler());
     registerHandler(new NameValuePairHandler());
     registerHandler(new BasicHandler());
   }

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,12 +23,19 @@ import com.javacreed.api.secureproperties.model.BlankPropertyEntry;
 import com.javacreed.api.secureproperties.model.CommentPropertyEntry;
 import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
-import com.javacreed.api.secureproperties.model.PlainNameValuePropertyEntry;
+import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.PropertyEntry;
 import com.javacreed.api.secureproperties.parser.PropertyEntryParseException;
 
+/**
+ *
+ * @author Albert Attard
+ */
 public class DefaultLinePropertyEntryParser implements LinePropertyEntryParser {
 
+  /**
+   *
+   */
   @Override
   public PropertyEntry parse(final String line) throws PropertyEntryParseException {
     if (line == null) {
@@ -50,7 +57,7 @@ public class DefaultLinePropertyEntryParser implements LinePropertyEntryParser {
         return new EncodedNameValuePropertyEntry(parts[0], parts[1].substring(5));
       }
       if (parts[1].startsWith("{pln}")) {
-        return new PlainNameValuePropertyEntry(parts[0], parts[1].substring(5));
+        return new PlainTextNameValuePropertyEntry(parts[0], parts[1].substring(5));
       }
 
       return new NameValuePropertyEntry(parts[0], parts[1]);

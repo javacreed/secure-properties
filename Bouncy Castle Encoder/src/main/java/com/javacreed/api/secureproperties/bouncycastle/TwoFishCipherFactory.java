@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,14 +33,26 @@ import org.bouncycastle.crypto.params.KeyParameter;
 import com.javacreed.api.secureproperties.cipher.pbe.AbstractPbeCipherFactory;
 
 /**
+ * @author Albert Attard
  */
 public class TwoFishCipherFactory extends AbstractPbeCipherFactory {
 
+  /**
+   * Creates an instance of this factory with the default settings
+   */
   public TwoFishCipherFactory() {
     this("javacreed");
   }
 
-  public TwoFishCipherFactory(final String key) {
+  /**
+   * Creates an instance of this factory using the given {@code key}
+   * 
+   * @param key
+   *          the algorithm's key
+   * @throws NullPointerException
+   *           if the key is {@code null}
+   */
+  public TwoFishCipherFactory(final String key) throws NullPointerException {
     super(key);
   }
 

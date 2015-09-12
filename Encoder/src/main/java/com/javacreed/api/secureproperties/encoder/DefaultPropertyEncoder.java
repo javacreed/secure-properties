@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,7 +24,7 @@ import java.util.Objects;
 import com.javacreed.api.secureproperties.cipher.CipherFactory;
 import com.javacreed.api.secureproperties.cipher.pbe.AesCipherFactory;
 import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
-import com.javacreed.api.secureproperties.model.PlainNameValuePropertyEntry;
+import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.PropertyEntry;
 
 /**
@@ -54,10 +54,10 @@ public class DefaultPropertyEncoder implements PropertyEncoder {
 
   @Override
   public PropertyEntry encode(final PropertyEntry entry) throws EncoderException {
-    if (entry instanceof PlainNameValuePropertyEntry) {
-      final PlainNameValuePropertyEntry pnvpEntry = (PlainNameValuePropertyEntry) entry;
+    if (entry instanceof PlainTextNameValuePropertyEntry) {
+      final PlainTextNameValuePropertyEntry pnvpEntry = (PlainTextNameValuePropertyEntry) entry;
       final String formatted = formatter.format(pnvpEntry.getName(), pnvpEntry.getValue());
-      final String encoded = "{enc}" + stringEncoder.encode(formatted);
+      final String encoded = /*"{enc}" +*/ stringEncoder.encode(formatted);
       return new EncodedNameValuePropertyEntry(pnvpEntry.getName(), encoded);
     }
 

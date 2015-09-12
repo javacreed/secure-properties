@@ -20,27 +20,35 @@
 package com.javacreed.secureproperties.properties;
 
 import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Properties;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.javacreed.api.secureproperties.properties.PropertiesFile;
 
 /**
- * This test fails and need to be fixed
+ * @author Albert Attard
  */
-@Ignore
 public class PropertiesFileTest {
 
   @Test
   public void test() throws Exception {
-    final PropertiesFile propertiesFile = new PropertiesFile();
-    final Properties properties = propertiesFile.loadProperties(new File(getClass().getResource(
-        "/samples/properties/file.001.properties").toURI()));
-    Assert.assertNotNull(properties);
+    final File file = new File("target/samples/properties/file.001.properties").getAbsoluteFile();
+    file.getParentFile().mkdirs();
+    try (InputStream in = getClass().getResourceAsStream("/samples/properties/file.001.properties")) {
+      Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    }
 
+    final PropertiesFile propertiesFile = new PropertiesFile();
+    final Properties properties = propertiesFile.loadProperties(file);
+    Assert.assertNotNull(properties);
+    Assert.assertEquals("Albert", properties.getProperty("name"));
+    Assert.assertEquals("Somewhere in Malta", properties.getProperty("address"));
+    Assert.assertEquals("my long secret password", properties.getProperty("password"));
   }
 
 }

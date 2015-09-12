@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,9 @@ import java.util.Objects;
 
 import net.jcip.annotations.NotThreadSafe;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.javacreed.api.secureproperties.cipher.CipherFactory;
 import com.javacreed.api.secureproperties.cipher.pbe.AesCipherFactory;
 import com.javacreed.api.secureproperties.encoder.EncoderException;
@@ -34,6 +37,8 @@ import com.javacreed.api.secureproperties.model.PropertyEntry;
  */
 @NotThreadSafe
 public class DefaultPropertyDecoder implements PropertyDecoder {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultPropertyDecoder.class);
 
   /** */
   private Parser parser = new DefaultParser();
@@ -77,8 +82,9 @@ public class DefaultPropertyDecoder implements PropertyDecoder {
   @Override
   public PropertyEntry decode(final PropertyEntry entry) throws EncoderException, NullPointerException {
     if (entry instanceof EncodedNameValuePropertyEntry) {
+      DefaultPropertyDecoder.LOGGER.debug("Decoding property: {}", entry);
       final EncodedNameValuePropertyEntry envpEntry = (EncodedNameValuePropertyEntry) entry;
-      final String decoded = decoder.decode(envpEntry.getValue()/* .substring(5) */);
+      final String decoded = decoder.decode(envpEntry.getValue());
       final NameValuePropertyEntry nvpEntry = parser.parse(decoded);
 
       if (nvpEntry.getName().equals(envpEntry.getName()) == false) {
