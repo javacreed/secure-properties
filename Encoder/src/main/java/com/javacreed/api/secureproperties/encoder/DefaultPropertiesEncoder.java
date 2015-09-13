@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,8 +31,16 @@ import org.slf4j.LoggerFactory;
 import com.javacreed.api.secureproperties.cipher.CipherFactory;
 import com.javacreed.api.secureproperties.model.PropertyEntry;
 
+/**
+ *
+ * @author Albert Attard
+ */
 public class DefaultPropertiesEncoder implements PropertiesEncoder {
 
+  /**
+   *
+   * @author Albert Attard
+   */
   private static class DefaultEncodedProperties implements EncodedProperties {
 
     private int encoded;
@@ -55,8 +63,10 @@ public class DefaultPropertiesEncoder implements PropertiesEncoder {
     }
   }
 
+  /** Class logger */
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultPropertiesEncoder.class);
 
+  /** */
   private PropertyEncoder encoder;
 
   public DefaultPropertiesEncoder() {

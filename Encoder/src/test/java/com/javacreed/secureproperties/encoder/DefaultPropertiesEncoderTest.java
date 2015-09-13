@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,7 +38,7 @@ import com.javacreed.api.secureproperties.model.PropertyEntry;
 import com.javacreed.api.secureproperties.parser.io.ReaderPropertyParser;
 import com.javacreed.api.secureproperties.writer.io.LinePropertyEntryWriter;
 
-public class PropertyStringEncoderTest {
+public class DefaultPropertiesEncoderTest {
 
   @Test
   public void test() throws Exception {
@@ -62,7 +62,7 @@ public class PropertyStringEncoderTest {
     final List<String> lines = Files.readAllLines(Paths.get(path), Charset.forName("UTF-8"));
     Assert.assertNotNull(lines);
     Assert.assertEquals(4, lines.size());
-    Assert.assertEquals("# This is a simple samples.properties file", lines.get(0));
+    Assert.assertEquals("# This is a simple properties file", lines.get(0));
     Assert.assertEquals("name=Albert", lines.get(1));
     // TODO: We should preserve the multi line here as well
     Assert.assertEquals("address=Somewhere in Malta", lines.get(2));

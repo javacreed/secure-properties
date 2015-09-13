@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,7 @@ import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.PropertyEntry;
 
 /**
- * 
+ *
  * @author Albert Attard
  */
 public class PropertyDecoderTest {
@@ -38,7 +38,7 @@ public class PropertyDecoderTest {
   public void test() {
     final String[] encoded = {
         "5a4a9bb633d7f624197a0bf6efeae502f9e32762c5598f1329f79ba41fac663b41e293d410ca5d0d20e91ffa8a3a3b3525bfe00fc672872125dcc833834151c2",
-        "2a9beaced9f3f73503bf7e44e15abb915ee747f1ac772267d434f50034a6587f59f23b5737e567eff105f19184235eb7d836a17bc63bd6167b67a4b3182fbde4" };
+    "2a9beaced9f3f73503bf7e44e15abb915ee747f1ac772267d434f50034a6587f59f23b5737e567eff105f19184235eb7d836a17bc63bd6167b67a4b3182fbde4" };
 
     for (final String e : encoded) {
       final EncodedNameValuePropertyEntry envPropertyEntry = new EncodedNameValuePropertyEntry("password", e);

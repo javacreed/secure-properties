@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,13 +22,13 @@ package com.javacreed.secureproperties.cipher.pbe;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.javacreed.api.secureproperties.decoder.CipherDecoder;
+import com.javacreed.api.secureproperties.decoder.CipherStringDecoder;
 
 public class AesCipherStringDecoderTest {
 
   @Test
   public void test() {
-    final CipherDecoder encoder = new CipherDecoder();
+    final CipherStringDecoder encoder = new CipherStringDecoder();
     Assert.assertEquals("hello", encoder.decode("a1c4054f59827c94cd1e1693c300a569"));
   }
 }

@@ -21,8 +21,10 @@ package com.javacreed.secureproperties.properties;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Properties;
 
 import org.junit.Assert;
@@ -49,6 +51,14 @@ public class PropertiesFileTest {
     Assert.assertEquals("Albert", properties.getProperty("name"));
     Assert.assertEquals("Somewhere in Malta", properties.getProperty("address"));
     Assert.assertEquals("my long secret password", properties.getProperty("password"));
-  }
 
+    final List<String> lines = Files.readAllLines(file.toPath(), Charset.forName("UTF-8"));
+    Assert.assertEquals(4, lines.size());
+    Assert.assertEquals("# This is a simple properties file", lines.get(0));
+    Assert.assertEquals("name=Albert", lines.get(1));
+    Assert.assertEquals("address=Somewhere in Malta", lines.get(2));
+    Assert.assertNotNull(lines.get(3));
+    Assert.assertTrue(lines.get(3).startsWith("password={enc}"));
+    Assert.assertFalse(lines.get(3).contains("my long secret password"));
+  }
 }

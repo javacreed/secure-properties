@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,27 +23,52 @@ import java.security.SecureRandom;
 import java.util.Objects;
 import java.util.Random;
 
+import net.jcip.annotations.Immutable;
 import net.jcip.annotations.ThreadSafe;
 
 import com.javacreed.api.secureproperties.utils.NumbersUtils;
 
 /**
+ * @author Albert Attard
  */
 @ThreadSafe
+@Immutable
 public class DefaultFormatter implements Formatter {
 
+  /** */
   private final Random random;
+
+  /** */
   private final int paddingLength;
+
+  /** */
   private final int minimumLength;
 
+  /**
+   *
+   */
   public DefaultFormatter() {
     this(new SecureRandom(), 3, 16);
   }
 
+  /**
+   *
+   * @param paddingLength
+   * @param minimumLength
+   * @throws IllegalArgumentException
+   */
   public DefaultFormatter(final int paddingLength, final int minimumLength) throws IllegalArgumentException {
     this(new SecureRandom(), paddingLength, minimumLength);
   }
 
+  /**
+   *
+   * @param random
+   * @param paddingLength
+   * @param minimumLength
+   * @throws NullPointerException
+   * @throws IllegalArgumentException
+   */
   public DefaultFormatter(final Random random, final int paddingLength, final int minimumLength)
       throws NullPointerException, IllegalArgumentException {
     this.random = Objects.requireNonNull(random);
@@ -80,12 +105,4 @@ public class DefaultFormatter implements Formatter {
 
     return formatted.toString();
   }
-
-  // public void setMinimumLength(final int minimumLength) {
-  // this.minimumLength = minimumLength;
-  // }
-
-  // public void setRandom(final Random random) {
-  // this.random = Objects.requireNonNull(random);
-  // }
 }
