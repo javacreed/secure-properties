@@ -6,10 +6,20 @@
 	<groupId>com.javacreed.api</groupId>
 	<artifactId>secure-properties-modules</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>JavaCreed Secure Properties Modules POM</name>
 	<packaging>pom</packaging>
 
+	<name>JavaCreed Secure Properties Modules POM</name>
+	<inceptionYear>${project.inceptionYear}</inceptionYear>
+	<organization>
+		<name>${project.organization.name}</name>
+		<url>${project.organization.url}</url>
+	</organization>
+
 	<properties>
+		<project.inceptionYear>2012</project.inceptionYear>
+		<project.organization.name>Java Creed</project.organization.name>
+		<project.organization.url>http://www.javacreed.com/</project.organization.url>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -20,7 +30,99 @@
 		<module>../Spring Encoder</module>
 	</modules>
 
+	<developers>
+		<developer>
+			<id>albert</id>
+			<name>Albert Attard</name>
+			<email>albert@javacreed.com</email>
+			<url>${project.organization.url}</url>
+			<organization>${project.organization.name}</organization>
+			<organizationUrl>${project.organization.url}</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+				<role>writer</role>
+			</roles>
+			<timezone>CET</timezone>
+		</developer>
+	</developers>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<build>
 		<defaultGoal>clean install cobertura:cobertura</defaultGoal>
+
+
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.3</version>
+				<configuration>
+					<show>private</show>
+					<nohelp>true</nohelp>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.3</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
 </project>

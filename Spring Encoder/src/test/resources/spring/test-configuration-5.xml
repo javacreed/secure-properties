@@ -20,24 +20,24 @@
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-       <bean id="propertyConfigurer"
-             class="com.javacreed.api.secureproperties.spring.EncodedPropertyPlaceholderConfigurer">
-              <property name="cipherFactory">
-                  <bean class="com.javacreed.api.secureproperties.cipher.pbe.AesCipherFactory">
-                      <!-- Note that the standard JRE does not support long keys -->
-                      <!-- <property name="keyLength" value="192" /> -->
-                      <property name="key" value="the new AES key" />
-                  </bean>
-              </property>
-              <property name="modifiableLocations">
-                     <list>
-                            <value>file:target/samples/properties/file.001.properties</value>
-                     </list>
-              </property>
-       </bean>
+	<bean id="propertyConfigurer"
+		class="com.javacreed.api.secureproperties.spring.EncodedPropertyPlaceholderConfigurer">
+		<property name="cipherFactory">
+			<bean
+				class="com.javacreed.api.secureproperties.cipher.pbe.AesCipherFactory">
+				<!-- Note that the standard JRE does not support long keys -->
+				<!-- <property name="keyLength" value="192" /> -->
+				<property name="key" value="the new AES key" />
+			</bean>
+		</property>
+		<property name="modifiableLocations">
+			<list>
+				<value>file:target/samples/properties/file.001.properties</value>
+			</list>
+		</property>
+	</bean>
 
 </beans>
