@@ -23,6 +23,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
 
+import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
+import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.PropertyEntry;
 
@@ -45,8 +47,19 @@ public class DefaultResultSetExtractor implements ResultSetExtractor {
 
   @Override
   public PropertyEntry extract(final ResultSet resultSet) throws SQLException {
-    // TODO: we need to distinguish between encoded and plain text
-    return new PlainTextNameValuePropertyEntry(resultSet.getString(nameColumnName),
-        resultSet.getString(valueColumnName));
+    // TODO: can we have null values?
+
+    final String name = resultSet.getString(nameColumnName);
+    final String value = resultSet.getString(valueColumnName);
+
+    if (value.startsWith("{enc}")) {
+      return new EncodedNameValuePropertyEntry(name, value.substring(5));
+    }
+
+    if (value.startsWith("{pln}")) {
+      return new PlainTextNameValuePropertyEntry(name, value.substring(5));
+    }
+
+    return new NameValuePropertyEntry(name, value);
   }
 }

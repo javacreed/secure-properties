@@ -29,8 +29,10 @@ import com.javacreed.api.secureproperties.writer.db.DbPropertyEntryWriter;
 
 /**
  * We try to update a field which does not exists. This will throw an {@link EncoderException}
+ *
+ * @author Albert Attard
  */
-public class DbPropertyEntryWriterFailTest extends AbstractTest {
+public class DbPropertyEntryWriterFailTest extends AbstractDbTest {
 
   /**
    * We try to update a field which does not exists. This will throw an {@link EncoderException}
@@ -42,7 +44,7 @@ public class DbPropertyEntryWriterFailTest extends AbstractTest {
   public void test() throws SQLException {
     dbHelper.execute("INSERT INTO `test_properties` VALUES ('name1', 'value1')");
 
-    final DbPropertyEntryWriter writer = new DbPropertyEntryWriter(dbHelper.getConnection(), "test_properties");
+    final DbPropertyEntryWriter writer = new DbPropertyEntryWriter(dbHelper.getDataSource(), "test_properties");
     try {
       writer.begin();
       writer.write(new NameValuePropertyEntry("name1", "valueA"));

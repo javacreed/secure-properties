@@ -19,47 +19,34 @@
  */
 package com.javacreed.secureproperties.parser.db;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.PropertyEntry;
 import com.javacreed.api.secureproperties.parser.db.ResultSetPropertyParser;
-import com.javacreed.secureproperties.utils.DbHelper;
+import com.javacreed.secureproperties.writer.db.AbstractDbTest;
 
 /**
+ *
+ * @author Albert Attard
  */
-public class ResultSetPropertyParserTest {
-
-  private DbHelper dbHelper;
-
-  @After
-  public void destroy() {
-    dbHelper.close();
-  }
-
-  @Before
-  public void init() throws SQLException {
-    dbHelper = DbHelper.create();
-    dbHelper.execute("DROP TABLE IF EXISTS `test_properties`");
-    dbHelper
-    .execute("CREATE TABLE `test_properties` (`name` VARCHAR(64) NOT NULL, `value` VARCHAR(128) NOT NULL, PRIMARY KEY(`name`))");
-  }
+public class ResultSetPropertyParserTest extends AbstractDbTest {
 
   @Test
   public void test() throws SQLException {
-    dbHelper.execute("INSERT INTO `test_properties` VALUES ('name1', 'value1')");
-    dbHelper.execute("INSERT INTO `test_properties` VALUES ('name2', 'value2')");
+    dbHelper.execute("INSERT INTO `" + defaultTableName + "` VALUES ('name1', 'value1')");
+    dbHelper.execute("INSERT INTO `" + defaultTableName + "` VALUES ('name2', 'value2')");
 
-    try (Statement statement = dbHelper.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM `test_properties`")) {
+    try (Connection connection = dbHelper.getConnection();
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM `" + defaultTableName + "`")) {
       final ResultSetPropertyParser parser = new ResultSetPropertyParser(resultSet);
 
       final List<PropertyEntry> properties = parser.getProperties();

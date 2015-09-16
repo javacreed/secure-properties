@@ -28,10 +28,13 @@ import com.javacreed.secureproperties.utils.DbHelper;
 
 /**
  */
-public class AbstractTest {
+public class AbstractDbTest {
 
   /** */
   protected DbHelper dbHelper;
+
+  /** */
+  protected final String defaultTableName = "test_properties";
 
   /**
    *
@@ -48,9 +51,9 @@ public class AbstractTest {
   @Before
   public void init() throws SQLException {
     dbHelper = DbHelper.create();
-    dbHelper.execute("DROP TABLE IF EXISTS `test_properties`");
-    dbHelper
-    .execute("CREATE TABLE `test_properties` (`name` VARCHAR(64) NOT NULL, `value` VARCHAR(128) NOT NULL, PRIMARY KEY(`name`))");
+    dbHelper.execute("DROP TABLE IF EXISTS `" + defaultTableName + "`");
+    dbHelper.execute("CREATE TABLE `" + defaultTableName
+        + "` (`name` VARCHAR(64) NOT NULL, `value` VARCHAR(128) NOT NULL, PRIMARY KEY(`name`))");
   }
 
 }

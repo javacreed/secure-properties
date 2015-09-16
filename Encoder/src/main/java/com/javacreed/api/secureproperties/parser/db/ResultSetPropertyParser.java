@@ -25,13 +25,37 @@ import java.util.Objects;
 import com.javacreed.api.secureproperties.model.PropertyEntry;
 import com.javacreed.api.secureproperties.parser.AbstractPropertiesParser;
 
+/**
+ *
+ * @author Albert Attard
+ */
 public class ResultSetPropertyParser extends AbstractPropertiesParser {
 
+  /** */
   private final ResultSet resultSet;
-  private ResultSetExtractor extractor = new DefaultResultSetExtractor();
 
-  public ResultSetPropertyParser(final ResultSet resultSet) {
+  /** */
+  private final ResultSetExtractor extractor;
+
+  /**
+   *
+   * @param resultSet
+   * @throws NullPointerException
+   */
+  public ResultSetPropertyParser(final ResultSet resultSet) throws NullPointerException {
+    this(resultSet, new DefaultResultSetExtractor());
+  }
+
+  /**
+   *
+   * @param resultSet
+   * @param extractor
+   * @throws NullPointerException
+   */
+  public ResultSetPropertyParser(final ResultSet resultSet, final ResultSetExtractor extractor)
+      throws NullPointerException {
     this.resultSet = Objects.requireNonNull(resultSet);
+    this.extractor = Objects.requireNonNull(extractor);
   }
 
   @Override
@@ -41,10 +65,6 @@ public class ResultSetPropertyParser extends AbstractPropertiesParser {
     }
 
     return null;
-  }
-
-  public void setExtractor(final ResultSetExtractor extractor) throws NullPointerException {
-    this.extractor = Objects.requireNonNull(extractor);
   }
 
 }

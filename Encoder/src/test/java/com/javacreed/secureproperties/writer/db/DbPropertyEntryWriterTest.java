@@ -22,29 +22,41 @@ package com.javacreed.secureproperties.writer.db;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
+import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.writer.db.DbPropertyEntryWriter;
 
 /**
+ *
+ * @author Albert Attard
  */
-public class DbPropertyEntryWriterTest extends AbstractTest {
+public class DbPropertyEntryWriterTest extends AbstractDbTest {
 
+  /**
+   *
+   * @throws Exception
+   */
   @Test
   public void test() throws Exception {
-    dbHelper.execute("INSERT INTO `test_properties` VALUES ('name1', 'value1')");
-    dbHelper.execute("INSERT INTO `test_properties` VALUES ('name2', 'value2')");
+    dbHelper.execute("INSERT INTO `" + defaultTableName + "` VALUES ('name1', 'value1')");
+    dbHelper.execute("INSERT INTO `" + defaultTableName + "` VALUES ('name2', 'value2')");
+    dbHelper.execute("INSERT INTO `" + defaultTableName + "` VALUES ('name3', 'value3')");
 
     // TODO: test within a transaction
-    final DbPropertyEntryWriter writer = new DbPropertyEntryWriter(dbHelper.getConnection(), "test_properties");
+    final DbPropertyEntryWriter writer = new DbPropertyEntryWriter(dbHelper.getDataSource(), defaultTableName);
     writer.begin();
     writer.write(new NameValuePropertyEntry("name1", "valueA"));
-    writer.write(new NameValuePropertyEntry("name2", "valueB"));
+    writer.write(new PlainTextNameValuePropertyEntry("name2", "valueB"));
+    writer.write(new EncodedNameValuePropertyEntry("name3", "valueC"));
     writer.commit();
 
     Assert.assertEquals("valueA",
-        dbHelper.queryForSingleValue("SELECT `value` FROM `test_properties` WHERE `name`='name1'"));
-    Assert.assertEquals("valueB",
-        dbHelper.queryForSingleValue("SELECT `value` FROM `test_properties` WHERE `name`='name2'"));
+        dbHelper.queryForSingleValue("SELECT `value` FROM `" + defaultTableName + "` WHERE `name`='name1'"));
+    Assert.assertEquals("{pln}valueB",
+        dbHelper.queryForSingleValue("SELECT `value` FROM `" + defaultTableName + "` WHERE `name`='name2'"));
+    Assert.assertEquals("{enc}valueC",
+        dbHelper.queryForSingleValue("SELECT `value` FROM `" + defaultTableName + "` WHERE `name`='name3'"));
   }
 
 }

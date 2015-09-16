@@ -24,15 +24,42 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Objects;
 
+import javax.sql.DataSource;
+
+import net.jcip.annotations.NotThreadSafe;
+
 import com.javacreed.api.secureproperties.encoder.EncoderException;
+import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
+import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.writer.AbstractPropertyEntryWriter;
 
 /**
- * TODO: we should not allow write before begin
+ * @author Albert Attard
  */
+@NotThreadSafe
 public class DbPropertyEntryWriter extends AbstractPropertyEntryWriter {
 
+  /**
+   *
+   * @author Albert Attard
+   */
+  private class EncodedNameValuePairHandler extends AbstractHandler<EncodedNameValuePropertyEntry> {
+
+    private EncodedNameValuePairHandler() {
+      super(EncodedNameValuePropertyEntry.class);
+    }
+
+    @Override
+    public void handle(final EncodedNameValuePropertyEntry entry) throws Exception {
+      executeUpdate(entry.getName(), "{enc}" + Objects.requireNonNull(entry.getValue()));
+    }
+  }
+
+  /**
+   *
+   * @author Albert Attard
+   */
   private class NameValuePairHandler extends AbstractHandler<NameValuePropertyEntry> {
 
     private NameValuePairHandler() {
@@ -41,41 +68,81 @@ public class DbPropertyEntryWriter extends AbstractPropertyEntryWriter {
 
     @Override
     public void handle(final NameValuePropertyEntry entry) throws Exception {
-      try (PreparedStatement preparedStatement = createPreparedStatement(connection, entry)) {
-        final int updateCount = preparedStatement.executeUpdate();
-        if (updateCount != 1) {
-          throw new SQLException("Expected one update but found " + updateCount);
-        }
-      }
+      executeUpdate(entry.getName(), entry.getValue());
     }
   }
 
+  /**
+   *
+   * @author Albert Attard
+   */
+  private class PlainTextNameValuePairHandler extends AbstractHandler<PlainTextNameValuePropertyEntry> {
+
+    private PlainTextNameValuePairHandler() {
+      super(PlainTextNameValuePropertyEntry.class);
+    }
+
+    @Override
+    public void handle(final PlainTextNameValuePropertyEntry entry) throws Exception {
+      executeUpdate(entry.getName(), "{pln}" + Objects.requireNonNull(entry.getValue()));
+    }
+  }
+
+  /** */
+  public static final String DEFAULT_TABLE_NAME = "properties";
+
+  /** */
+  private final DataSource dataSource;
+
+  /** */
+  private final String tableName;
+
+  /** */
   private Connection connection;
 
-  private String tableName = "properties";
-
-  public DbPropertyEntryWriter() {
-    registerHandlers();
+  /**
+   *
+   * @param dataSource
+   * @throws NullPointerException
+   */
+  public DbPropertyEntryWriter(final DataSource dataSource) throws NullPointerException {
+    this(dataSource, DbPropertyEntryWriter.DEFAULT_TABLE_NAME);
   }
 
-  public DbPropertyEntryWriter(final Connection connection) {
-    setConnection(connection);
-    registerHandlers();
-  }
-
-  public DbPropertyEntryWriter(final Connection connection, final String tableName) {
-    setConnection(connection);
-    setTableName(tableName);
+  /**
+   *
+   * @param dataSource
+   * @param tableName
+   * @throws NullPointerException
+   */
+  public DbPropertyEntryWriter(final DataSource dataSource, final String tableName) throws NullPointerException {
+    this.dataSource = Objects.requireNonNull(dataSource);
+    this.tableName = Objects.requireNonNull(tableName);
     registerHandlers();
   }
 
   @Override
   public void begin() throws EncoderException {
     try {
+      connection = dataSource.getConnection();
       connection.setAutoCommit(false);
-      connection.rollback();
     } catch (final SQLException e) {
       throw EncoderException.launder(e);
+    }
+  }
+
+  /**
+   *
+   */
+  private void closeConnectionQuietly() {
+    if (connection != null) {
+      try {
+        connection.close();
+      } catch (final Exception e) {
+        // Suppress error
+      } finally {
+        connection = null;
+      }
     }
   }
 
@@ -85,20 +152,42 @@ public class DbPropertyEntryWriter extends AbstractPropertyEntryWriter {
       connection.commit();
     } catch (final SQLException e) {
       throw EncoderException.launder(e);
+    } finally {
+      closeConnectionQuietly();
     }
   }
 
-  // public boolean accept(PropertyEntry entry){
-  // return (entry instanceof NameValuePropertyEntry);
-  // }
-
-  protected PreparedStatement createPreparedStatement(final Connection connection, final NameValuePropertyEntry entry)
-      throws SQLException {
+  /**
+   *
+   * @param connection
+   * @param name
+   * @param value
+   * @return
+   * @throws SQLException
+   * @throws NullPointerException
+   */
+  private PreparedStatement createPreparedStatement(final Connection connection, final String name, final String value)
+      throws SQLException, NullPointerException {
     final String query = "UPDATE `" + tableName + "` SET `value`=? WHERE `name`=?";
     final PreparedStatement preparedStatement = connection.prepareStatement(query);
-    preparedStatement.setString(1, entry.getValue());
-    preparedStatement.setString(2, entry.getName());
+    preparedStatement.setString(1, value);
+    preparedStatement.setString(2, name);
     return preparedStatement;
+  }
+
+  /**
+   *
+   * @param name
+   * @param value
+   * @throws SQLException
+   */
+  private void executeUpdate(final String name, final String value) throws SQLException {
+    try (PreparedStatement preparedStatement = createPreparedStatement(connection, name, value)) {
+      final int updateCount = preparedStatement.executeUpdate();
+      if (updateCount != 1) {
+        throw new SQLException("Expected one update but found " + updateCount);
+      }
+    }
   }
 
   @Override
@@ -110,15 +199,12 @@ public class DbPropertyEntryWriter extends AbstractPropertyEntryWriter {
     }
   }
 
+  /**
+   *
+   */
   private void registerHandlers() {
     registerHandler(new NameValuePairHandler());
-  }
-
-  public void setConnection(final Connection connection) {
-    this.connection = Objects.requireNonNull(connection);
-  }
-
-  public void setTableName(final String tableName) {
-    this.tableName = Objects.requireNonNull(tableName);
+    registerHandler(new EncodedNameValuePairHandler());
+    registerHandler(new PlainTextNameValuePairHandler());
   }
 }

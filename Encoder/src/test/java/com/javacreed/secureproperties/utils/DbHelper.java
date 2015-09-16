@@ -20,18 +20,25 @@
 package com.javacreed.secureproperties.utils;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Objects;
 
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp2.BasicDataSource;
+
 /**
- * Created by Albert on 24/08/2015.
+ * @author Albert Attard
  */
 public class DbHelper {
 
-  public static void close(final AutoCloseable closeable) {
+  /**
+   *
+   * @param closeable
+   */
+  public static void closeQuietly(final AutoCloseable closeable) {
     if (closeable != null) {
       try {
         closeable.close();
@@ -39,38 +46,83 @@ public class DbHelper {
     }
   }
 
+  /**
+   *
+   * @return
+   * @throws SQLException
+   */
   public static DbHelper create() throws SQLException {
-    final Connection connection = DriverManager.getConnection("jdbc:h2:./target/test", "sa", "");
-    final DbHelper helper = new DbHelper(connection);
+    final BasicDataSource dataSource = new BasicDataSource();
+    dataSource.setDriverClassName("org.h2.Driver");
+    dataSource.setUrl("jdbc:h2:./target/test");
+    dataSource.setUsername("sa");
+    dataSource.setPassword("");
+
+    final DbHelper helper = new DbHelper(dataSource);
     return helper;
   }
 
-  private final Connection connection;
+  /** */
+  private final BasicDataSource dataSource;
 
-  public DbHelper(final Connection connection) {
-    this.connection = Objects.requireNonNull(connection);
+  /**
+   *
+   * @param dataSource
+   * @throws NullPointerException
+   */
+  public DbHelper(final BasicDataSource dataSource) throws NullPointerException {
+    this.dataSource = Objects.requireNonNull(dataSource);
   }
 
+  /**
+   *
+   */
   public void close() {
-    DbHelper.close(connection);
+    DbHelper.closeQuietly(dataSource);
   }
 
-  public Statement createStatement() throws SQLException {
-    return connection.createStatement();
-  }
+  // public Statement createStatement() throws SQLException {
+  // return connection.createStatement();
+  // }
 
+  /**
+   *
+   * @param query
+   * @throws SQLException
+   */
   public void execute(final String query) throws SQLException {
-    try (Statement statement = createStatement()) {
+    try (Connection connection = getConnection(); Statement statement = connection.createStatement()) {
       statement.execute(query);
     }
   }
 
-  public Connection getConnection() {
-    return connection;
+  /**
+   *
+   * @return
+   * @throws SQLException
+   */
+  public Connection getConnection() throws SQLException {
+    return dataSource.getConnection();
   }
 
+  /**
+   *
+   * @return
+   */
+  public DataSource getDataSource() {
+    return dataSource;
+  }
+
+  /**
+   *
+   * @param query
+   * @return
+   * @throws SQLException
+   */
   public String queryForSingleValue(final String query) throws SQLException {
-    try (Statement statement = createStatement(); ResultSet resultSet = statement.executeQuery(query);) {
+    try (Connection connection = getConnection();
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query);) {
       if (resultSet.next()) {
         final String value = resultSet.getString(1);
 
