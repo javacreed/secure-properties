@@ -33,6 +33,7 @@ import com.javacreed.api.secureproperties.model.PropertyEntry;
 import com.javacreed.api.secureproperties.parser.AbstractPropertiesParser;
 
 /**
+ *
  * @author Albert Attard
  */
 public class ReaderPropertyParser extends AbstractPropertiesParser {
@@ -41,21 +42,51 @@ public class ReaderPropertyParser extends AbstractPropertiesParser {
    *
    * @param file
    * @return
+   * @throws NullPointerException
    * @throws IOException
    */
-  public static List<PropertyEntry> readAndClose(final File file) throws IOException {
+  public static List<PropertyEntry> readAndClose(final File file) throws NullPointerException, IOException {
     return ReaderPropertyParser.readAndClose(new BufferedInputStream(new FileInputStream(file)));
+  }
+
+  /**
+   *
+   * @param file
+   * @param parser
+   * @return
+   * @throws NullPointerException
+   * @throws IOException
+   */
+  public static List<PropertyEntry> readAndClose(final File file, final LinePropertyEntryParser parser)
+      throws NullPointerException, IOException {
+    return ReaderPropertyParser.readAndClose(new BufferedInputStream(new FileInputStream(file)), parser);
   }
 
   /**
    *
    * @param input
    * @return
+   * @throws NullPointerException
    * @throws IOException
    */
   public static List<PropertyEntry> readAndClose(final InputStream input) throws IOException {
-    try (InputStream i = input) {
+    try (InputStream i = Objects.requireNonNull(input)) {
       return ReaderPropertyParser.readAndClose(i, "UTF-8");
+    }
+  }
+
+  /**
+   *
+   * @param input
+   * @param parser
+   * @return
+   * @throws NullPointerException
+   * @throws IOException
+   */
+  public static List<PropertyEntry> readAndClose(final InputStream input, final LinePropertyEntryParser parser)
+      throws IOException {
+    try (InputStream i = input) {
+      return ReaderPropertyParser.readAndClose(i, "UTF-8", parser);
     }
   }
 
@@ -64,12 +95,27 @@ public class ReaderPropertyParser extends AbstractPropertiesParser {
    * @param input
    * @param encoding
    * @return
+   * @throws NullPointerException
    * @throws IOException
    */
   public static List<PropertyEntry> readAndClose(final InputStream input, final String encoding) throws IOException {
+    return ReaderPropertyParser.readAndClose(input, encoding, new DefaultLinePropertyEntryParser());
+  }
+
+  /**
+   *
+   * @param input
+   * @param encoding
+   * @param parser
+   * @return
+   * @throws NullPointerException
+   * @throws IOException
+   */
+  public static List<PropertyEntry> readAndClose(final InputStream input, final String encoding,
+      final LinePropertyEntryParser parser) throws IOException {
     try (InputStreamReader isr = new InputStreamReader(input, encoding);
         BufferedReader reader = new BufferedReader(isr)) {
-      return new ReaderPropertyParser(reader).getProperties();
+      return new ReaderPropertyParser(reader, parser).getProperties();
     }
   }
 
@@ -77,24 +123,50 @@ public class ReaderPropertyParser extends AbstractPropertiesParser {
    *
    * @param path
    * @return
+   * @throws NullPointerException
    * @throws IOException
    */
-  public static List<PropertyEntry> readAndClose(final String path) throws IOException {
+  public static List<PropertyEntry> readAndClose(final String path) throws NullPointerException, IOException {
     return ReaderPropertyParser.readAndClose(new File(path));
+  }
+
+  /**
+   *
+   * @param path
+   * @param parser
+   * @return
+   * @throws NullPointerException
+   * @throws IOException
+   */
+  public static List<PropertyEntry> readAndClose(final String path, final LinePropertyEntryParser parser)
+      throws NullPointerException, IOException {
+    return ReaderPropertyParser.readAndClose(new File(path), parser);
   }
 
   /** */
   private final BufferedReader reader;
 
   /** */
-  private LinePropertyEntryParser parser = new DefaultLinePropertyEntryParser();
+  private final LinePropertyEntryParser parser;
 
   /**
    *
    * @param reader
    */
-  public ReaderPropertyParser(final BufferedReader reader) {
-    this.reader = reader;
+  public ReaderPropertyParser(final BufferedReader reader) throws NullPointerException {
+    this(reader, new DefaultLinePropertyEntryParser());
+  }
+
+  /**
+   *
+   * @param reader
+   * @param parser
+   * @throws NullPointerException
+   */
+  public ReaderPropertyParser(final BufferedReader reader, final LinePropertyEntryParser parser)
+      throws NullPointerException {
+    this.reader = Objects.requireNonNull(reader);
+    this.parser = Objects.requireNonNull(parser);
   }
 
   @Override
@@ -121,13 +193,5 @@ public class ReaderPropertyParser extends AbstractPropertiesParser {
     }
 
     return parser.parse(builder.toString());
-  }
-
-  /**
-   *
-   * @param parser
-   */
-  public void setParser(final LinePropertyEntryParser parser) {
-    this.parser = Objects.requireNonNull(parser);
   }
 }

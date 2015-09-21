@@ -19,18 +19,27 @@
  */
 package com.javacreed.api.secureproperties.encoder;
 
-import com.javacreed.api.secureproperties.model.PropertyEntry;
+import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
+import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
 
 /**
+ * Encodes a plain text property into an encoded property entry
+ *
+ * @author Albert Attard
  */
 public interface PropertyEncoder {
 
   /**
-   *
+   * Encodes a plain text property into an encoded property entry
+   * 
    * @param entry
-   * @return
+   *          the property to be encoded (which cannot be {@code null})
+   * @return the encoded property
    * @throws EncoderException
+   *           if an error occurs while encoding the property
    * @throws NullPointerException
+   *           if the given {@code entry} is {@code null}
    */
-  public PropertyEntry encode(PropertyEntry entry) throws EncoderException, NullPointerException;
+  public EncodedNameValuePropertyEntry encode(PlainTextNameValuePropertyEntry entry) throws EncoderException,
+      NullPointerException;
 }

@@ -37,44 +37,58 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import net.jcip.annotations.NotThreadSafe;
+
 /**
+ * Triple DES cipher factory.
  *
+ * This class is not thread safe as its state is not guarded by any locks.
+ *
+ * @author Albert Attard
  */
+@NotThreadSafe
 public class TripleDesCipherFactory extends AbstractPbeCipherFactory {
 
-  /** */
+  /** The algorithm name */
   private static final String ALGORITHM = "DESede";
 
-  /** */
+  /** The password-based encryption algorithm */
   private String factoryName = "PBEWithMD5AndDES";
 
-  /** */
+  /** The setup configuration */
   private String configuration = "DESede/CBC/PKCS5Padding";
 
-  /** */
+  /** The initial value */
   private byte[] iv = new byte[] { 48, -54, -23, -75, 110, 14, 7, 33 };
 
   /**
-   *
+   * Creates and instance of this class with the default key
    */
   public TripleDesCipherFactory() {
     this("javacreedjavacreedjavacr");
   }
 
   /**
+   * Creates an instance of this class with the given key
    *
    * @param key
+   *          the cipher key (which cannot be {@code null})
    * @throws NullPointerException
+   *           if the given {@code key} is {@code null}
    */
   public TripleDesCipherFactory(final String key) throws NullPointerException {
     super(key);
   }
 
   /**
+   * Creates an new cipher using the current configuration
    *
-   * @return
+   * @return a new instance of the Cipher using the current configuration
    * @throws NoSuchPaddingException
+   *           if configuration contains a padding scheme that is not available.
    * @throws NoSuchAlgorithmException
+   *           if configuration is {@code null}, empty, in an invalid format, or if no Provider supports a CipherSpi
+   *           implementation for the specified algorithm.
    */
   private Cipher createCipher() throws NoSuchPaddingException, NoSuchAlgorithmException {
     final Cipher cipher = Cipher.getInstance(configuration);
@@ -82,6 +96,7 @@ public class TripleDesCipherFactory extends AbstractPbeCipherFactory {
   }
 
   /**
+   * Creates the secret key specification for this algorithm
    *
    * @return
    * @throws NoSuchAlgorithmException
@@ -96,9 +111,12 @@ public class TripleDesCipherFactory extends AbstractPbeCipherFactory {
   }
 
   /**
+   * Change the cipher configuration
    *
    * @param configuration
+   *          the new configuration to be used (which cannot be {@code null})
    * @throws NullPointerException
+   *           if the given configuration is {@code null}
    */
   public void setConfiguration(final String configuration) throws NullPointerException {
     this.configuration = Objects.requireNonNull(configuration);

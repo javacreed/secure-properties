@@ -21,6 +21,8 @@ package com.javacreed.api.secureproperties.adapter;
 
 import java.util.Objects;
 
+import net.jcip.annotations.Immutable;
+
 import com.javacreed.api.secureproperties.cipher.CipherFactory;
 import com.javacreed.api.secureproperties.cipher.pbe.AesCipherFactory;
 
@@ -29,6 +31,7 @@ import com.javacreed.api.secureproperties.cipher.pbe.AesCipherFactory;
  *
  * @author Albert Attard
  */
+@Immutable
 public class AbstractCipherBase {
 
   /**
@@ -39,14 +42,20 @@ public class AbstractCipherBase {
   /**
    * Creates an instance of this class using the {@link AesCipherFactory} default cipher factory with the default
    * configuration.
+   * 
+   * @see AesCipherFactory
    */
   public AbstractCipherBase() {
     this(new AesCipherFactory());
   }
 
   /**
+   * Creates an instance of this class using the given cipher factory.
+   *
    * @param cipherFactory
+   *          the cipher factory to be used (which cannot be {@code null})
    * @throws NullPointerException
+   *           if the given cipher is {@code null}
    */
   public AbstractCipherBase(final CipherFactory cipherFactory) throws NullPointerException {
     this.cipherFactory = Objects.requireNonNull(cipherFactory);
@@ -59,6 +68,9 @@ public class AbstractCipherBase {
    * @param key
    *          the password (which cannot be {@code null})
    * @throws NullPointerException
+   *           if the given {@code key} is {@code null}
+
+   * @see AesCipherFactory
    */
   public AbstractCipherBase(final String key) throws NullPointerException {
     this(new AesCipherFactory(key));

@@ -24,22 +24,35 @@ import java.util.Iterator;
 import com.javacreed.api.secureproperties.model.PropertyEntry;
 
 /**
+ * Encodes a list of properties
+ * 
+ * @author Albert Attard
  */
 public interface PropertiesEncoder {
 
   /**
-   *
+   * Encodes the given properties, if encoding is necessary, and returns the encoded properties
+   * 
    * @param propertiesEntries
-   * @return
+   *          the properties to be encoded
+   * @return the encoded properties
+   * @throws NullPointerException
+   *           if the given {@code propertiesEntries} is {@code null}
    * @throws EncoderException
+   *           if an error occurs while encoding the properties
    */
-  EncodedProperties encode(Iterable<PropertyEntry> propertiesEntries) throws EncoderException;
+  EncodedProperties encode(Iterable<PropertyEntry> propertiesEntries) throws NullPointerException, EncoderException;
 
   /**
-   *
+   * Encodes the given properties, if encoding is necessary, and returns the encoded properties
+   * 
    * @param propertiesEntries
-   * @return
+   *          the properties to be encoded
+   * @return the encoded properties
+   * @throws NullPointerException
+   *           if the given {@code propertiesEntries} is {@code null}
    * @throws EncoderException
+   *           if an error occurs while encoding the properties
    */
-  EncodedProperties encode(Iterator<PropertyEntry> propertiesEntries) throws EncoderException;
+  EncodedProperties encode(Iterator<PropertyEntry> propertiesEntries) throws NullPointerException, EncoderException;
 }

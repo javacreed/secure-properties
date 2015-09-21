@@ -40,6 +40,7 @@ public class CipherStringAdapter extends AbstractCipherBase implements StringDec
   }
 
   /**
+   * Creates an instance of this class using the given cipher factor
    *
    * @param cipherFactory
    *          the cipher factory (which cannot be {@code null})
@@ -51,6 +52,7 @@ public class CipherStringAdapter extends AbstractCipherBase implements StringDec
   }
 
   /**
+   * Creates an instance of this class the default cipher with the given key
    *
    * @param key
    *          the passwords used (which cannot be {@code null})

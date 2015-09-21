@@ -19,17 +19,31 @@
  */
 package com.javacreed.api.secureproperties.model;
 
+import net.jcip.annotations.Immutable;
+
+/**
+ * Represents a property entry which needs to be encoded.
+ *
+ * The {@link #toString()} method only shows the property name
+ *
+ * @author Albert Attard
+ */
+@Immutable
 public class PlainTextNameValuePropertyEntry extends NameValuePropertyEntry {
 
-  public PlainTextNameValuePropertyEntry(final String name, final String value) {
+  /**
+   * Creates an instance this class
+   *
+   * @param name
+   *          the property name (which cannot be {@code null})
+   * @param value
+   *          the property value (which cannot be {@code null})
+   * @throws NullPointerException
+   *           if any of the parameters are {@code null}
+   */
+  public PlainTextNameValuePropertyEntry(final String name, final String value) throws NullPointerException {
     super(name, value);
   }
-
-  // @Override
-  // public PropertyEntry encode(Encoder encoder) throws EncoderException {
-  // String encoded = encoder.encode(name+","+value);
-  // return new EncodedNameValuePropertyEntry(name, encoded);
-  // }
 
   @Override
   public String toString() {

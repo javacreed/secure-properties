@@ -1,0 +1,42 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.javacreed.api</groupId>
+		<artifactId>secure-properties-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../Parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>secure-properties-examples</artifactId>
+	<packaging>bundle</packaging>
+
+	<name>JavaCreed Secure Properties Examples</name>
+	<url>http://www.javacreed.com/${project.artifactId}/</url>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.javacreed.api</groupId>
+			<artifactId>secure-properties-encoder</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.12</version>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.188</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<version>2.1.1</version>
+		</dependency>
+	</dependencies>
+</project>

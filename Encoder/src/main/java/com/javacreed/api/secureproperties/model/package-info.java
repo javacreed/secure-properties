@@ -20,24 +20,7 @@
 package com.javacreed.api.secureproperties.model;
 
 /**
- * Represents the encoded property entry
+ * This package contains modle classes which there are immutable in general.
  *
  * @author Albert Attard
  */
-public class EncodedNameValuePropertyEntry extends NameValuePropertyEntry {
-
-  /**
-   * Creates an instance of this class
-   *
-   * @param name
-   *          the encoded property name
-   * @param value
-   *          the encoded property value
-   * @throws NullPointerException
-   *           if any of the parameters are {@code null}
-   */
-  public EncodedNameValuePropertyEntry(final String name, final String value) throws NullPointerException {
-    super(name, value);
-  }
-
-}

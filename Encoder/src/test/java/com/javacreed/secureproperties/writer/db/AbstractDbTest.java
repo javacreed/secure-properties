@@ -19,6 +19,8 @@
  */
 package com.javacreed.secureproperties.writer.db;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.junit.After;
@@ -53,7 +55,23 @@ public class AbstractDbTest {
     dbHelper = DbHelper.create();
     dbHelper.execute("DROP TABLE IF EXISTS `" + defaultTableName + "`");
     dbHelper.execute("CREATE TABLE `" + defaultTableName
-        + "` (`name` VARCHAR(64) NOT NULL, `value` VARCHAR(128) NOT NULL, PRIMARY KEY(`name`))");
+        + "` (`name` VARCHAR(64) NOT NULL, `value` VARCHAR(255) NOT NULL, PRIMARY KEY(`name`))");
+  }
+
+  /**
+   *
+   * @param name
+   * @param value
+   * @throws SQLException
+   */
+  protected void insertData(final String name, final String value) throws SQLException {
+    final String query = "INSERT INTO `" + defaultTableName + "` VALUES (?, ?)";
+    try (Connection connection = dbHelper.getConnection();
+        PreparedStatement statement = connection.prepareStatement(query)) {
+      statement.setString(1, name);
+      statement.setString(2, value);
+      statement.execute();
+    }
   }
 
 }

@@ -31,7 +31,6 @@ import com.javacreed.api.secureproperties.encoder.DefaultPropertyEncoder;
 import com.javacreed.api.secureproperties.encoder.PropertyEncoder;
 import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
-import com.javacreed.api.secureproperties.model.PropertyEntry;
 
 /**
  * Tests the encoded values randomness. Note that when generating a large number of encoded values for the same
@@ -54,7 +53,7 @@ public class DefaultPropertyEncoderRandomTest {
   @Test
   public void test() throws Exception {
     // The plain text to be encoded several times
-    final PropertyEntry plain = new PlainTextNameValuePropertyEntry("albertattard", "simple");
+    final PlainTextNameValuePropertyEntry plain = new PlainTextNameValuePropertyEntry("albertattard", "simple");
 
     // Use the largest padding value to reduce the chances of duplicate values
     final DefaultFormatter formtter = new DefaultFormatter(16, 16);
@@ -66,11 +65,9 @@ public class DefaultPropertyEncoderRandomTest {
 
     // Generate a number of encoded value for the same credentials and make sure that all encoded values are different
     for (int i = 0; i < 2000; i++) {
-      final PropertyEntry encoded = propertyEncoder.encode(plain);
+      final EncodedNameValuePropertyEntry encoded = propertyEncoder.encode(plain);
       Assert.assertNotNull(encoded);
-      Assert.assertTrue(encoded instanceof EncodedNameValuePropertyEntry);
-
-      final String value = ((EncodedNameValuePropertyEntry) encoded).getValue();
+      final String value = encoded.getValue();
       Assert.assertTrue(encodedValues.add(value));
     }
   }

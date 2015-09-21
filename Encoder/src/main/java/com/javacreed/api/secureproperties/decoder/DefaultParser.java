@@ -20,14 +20,15 @@
 package com.javacreed.api.secureproperties.decoder;
 
 import com.javacreed.api.secureproperties.encoder.EncoderException;
-import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
+import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
 
 /**
+ * The default parser implementation
  */
 public class DefaultParser implements Parser {
 
   @Override
-  public NameValuePropertyEntry parse(final String formatted) throws EncoderException, NullPointerException {
+  public PlainTextNameValuePropertyEntry parse(final String formatted) throws EncoderException, NullPointerException {
     final String[] parts = formatted.split(",", 3);
 
     if (parts[1] == null || parts[1].matches("\\d+") == false) {
@@ -40,7 +41,7 @@ public class DefaultParser implements Parser {
     final int valueIndex = parts[2].indexOf(",", nameLength + 1);
     final String value = parts[2].substring(valueIndex + 1);
 
-    return new NameValuePropertyEntry(name, value);
+    return new PlainTextNameValuePropertyEntry(name, value);
   }
 
 }

@@ -26,48 +26,88 @@ import java.util.Random;
 import net.jcip.annotations.Immutable;
 import net.jcip.annotations.ThreadSafe;
 
+import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.utils.NumbersUtils;
 
 /**
+ * The default implementation of the {@link Formatter} interface. It takes an instance of
+ * {@link PlainTextNameValuePropertyEntry} and returns a string using the following structure:
+ * {@code padding+length-requirement,name-length,name,value-length,value}
+ *
+ * The padding is a set of random numbers which length is defined by the {@link #paddingLength}. The formatter takes a
+ * minimum length in order to disguise short messages. This has no effect of long values. This ensures that the
+ * formatted string is of at least some length. Each part of the formatted message is comma delimited and the property
+ * name and its value's are prefixed with their length.
+ *
  * @author Albert Attard
  */
 @ThreadSafe
 @Immutable
 public class DefaultFormatter implements Formatter {
 
-  /** */
+  /** The random number generator */
   private final Random random;
 
-  /** */
+  /** The number of random numbers to prefix the message */
   private final int paddingLength;
 
-  /** */
+  /**
+   * The minimum length of the property value. If the property value's length is less than this value, then more random
+   * numbers are added to the message prefix.
+   */
   private final int minimumLength;
 
   /**
-   *
+   * Creates an instance of this class with the default configuration.
+   * 
+   * @see SecureRandom
    */
   public DefaultFormatter() {
     this(new SecureRandom(), 3, 16);
   }
 
   /**
+   * Creates an instance of this class using an instance of {@link SecureRandom} as the random number generator.
    *
+   * The padding is a set of random numbers which length is defined by the {@code paddingLength}. These random numbers
+   * contribute to unique messages. The larger this value the higher the probability of unique messages it is.
+   * Furthermore, larger padding length also increase the overall message length. The formatter takes a minimum length
+   * in order to disguise short messages. This has no effect of long values. This ensures that the formatted string is
+   * of at least some length.
+   * 
    * @param paddingLength
+   *          the padding length (which should be between 1 and 16 both inclusive)
    * @param minimumLength
+   *          the minimum length of the property value (which should be between 1 and 128 both inclusive)
    * @throws IllegalArgumentException
+   *           if the padding is not between 1 and 16 both inclusive or if the minimum length is not between 1 and 128
+   *           both inclusive
+   * @see SecureRandom
    */
   public DefaultFormatter(final int paddingLength, final int minimumLength) throws IllegalArgumentException {
     this(new SecureRandom(), paddingLength, minimumLength);
   }
 
   /**
-   *
+   * Creates an instance of this class.
+   * 
+   * The padding is a set of random numbers which length is defined by the {@code paddingLength}. These random numbers
+   * contribute to unique messages. The larger this value the higher the probability of unique messages it is.
+   * Furthermore, larger padding length also increase the overall message length. The formatter takes a minimum length
+   * in order to disguise short messages. This has no effect of long values. This ensures that the formatted string is
+   * of at least some length.
+   * 
    * @param random
+   *          the random number generator
    * @param paddingLength
+   *          the padding length (which should be between 1 and 16 both inclusive)
    * @param minimumLength
+   *          the minimum length of the property value (which should be between 1 and 128 both inclusive)
    * @throws NullPointerException
+   *           if the random number generator is {@code null}
    * @throws IllegalArgumentException
+   *           if the padding is not between 1 and 16 both inclusive or if the minimum length is not between 1 and 128
+   *           both inclusive
    */
   public DefaultFormatter(final Random random, final int paddingLength, final int minimumLength)
       throws NullPointerException, IllegalArgumentException {
@@ -77,7 +117,9 @@ public class DefaultFormatter implements Formatter {
   }
 
   @Override
-  public String format(final String name, final String value) throws NullPointerException {
+  public String format(final PlainTextNameValuePropertyEntry propertyEntry) throws NullPointerException {
+    final String name = Objects.requireNonNull(propertyEntry.getName());
+    final String value = Objects.requireNonNull(propertyEntry.getValue());
 
     final StringBuilder formatted = new StringBuilder();
 

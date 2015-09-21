@@ -27,50 +27,66 @@ import com.javacreed.api.secureproperties.cipher.CipherFactory;
 import com.javacreed.api.secureproperties.cipher.pbe.AesCipherFactory;
 import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
-import com.javacreed.api.secureproperties.model.PropertyEntry;
 
 /**
+ * The default implementation of the {@link PropertyEncoder}. This version of the encoder makes use of a
+ * {@link Formatter} and a {@link StringEncoder} to encodes the property. The formatter is used to format the property
+ * into a single string while the encoder encodes the formatted value into an encoded, hex-decimal string.
  *
  * @author Albert Attard
  */
 @Immutable
 public class DefaultPropertyEncoder implements PropertyEncoder {
 
-  /** */
+  /** Formatter used to format the property before encoding it */
   private final Formatter formatter;
 
-  /** */
+  /** The encoder that will be used to encode the property */
   private final StringEncoder stringEncoder;
 
   /**
+   * Creates an instance of this class using the default configuration
    *
+   * @see DefaultFormatter
+   * @see CipherStringEncoder
    */
   public DefaultPropertyEncoder() {
     this("javacreed");
   }
 
   /**
+   * Creates an instance of this class with the given cipher factory using the default formatted.
    *
    * @param factory
+   *          the cipher factory to be used (which cannot be {@code null})
    * @throws NullPointerException
+   *           if the given {@code factory} is {@code null}
+   * @see DefaultFormatter
    */
   public DefaultPropertyEncoder(final CipherFactory factory) throws NullPointerException {
-    this(new DefaultFormatter(), new CipherStringEncoder(factory));
+    this(new CipherStringEncoder(factory));
   }
 
   /**
+   * Creates an instance of this class with the given formatter and the default cipher.
    *
    * @param formatter
+   *          the formatter to be used (which cannot be {@code null})
    * @throws NullPointerException
+   *           if the given {@code formatter} is {@code null}
+   * @see CipherStringEncoder
    */
   public DefaultPropertyEncoder(final Formatter formatter) throws NullPointerException {
     this(formatter, new CipherStringEncoder());
   }
 
   /**
+   * Creates an instance of this class
    *
    * @param formatter
+   *          the formatter to be used (which cannot be {@code null})
    * @param stringEncoder
+   *          the cipher factory to be used (which cannot be {@code null})
    * @throws NullPointerException
    */
   public DefaultPropertyEncoder(final Formatter formatter, final StringEncoder stringEncoder)
@@ -80,23 +96,34 @@ public class DefaultPropertyEncoder implements PropertyEncoder {
   }
 
   /**
+   * Creates an instance of this class using the default formatter and the default cipher with the given key.
    *
    * @param key
+   *          the key used by the encoder (which cannot be {@code null})
    * @throws NullPointerException
+   *           if the given {@code key} is {@code null}
    */
   public DefaultPropertyEncoder(final String key) throws NullPointerException {
-    this(new DefaultFormatter(), new CipherStringEncoder(new AesCipherFactory(key)));
+    this(new AesCipherFactory(key));
+  }
+
+  /**
+   * Creates an instance of this class with the given encoder using the default formatted.
+   *
+   * @param stringEncoder
+   *          the string encoder to be used (which cannot be {@code null})
+   * @throws NullPointerException
+   *           if the given {@code stringEncoder} is {@code null}
+   */
+  public DefaultPropertyEncoder(final StringEncoder stringEncoder) throws NullPointerException {
+    this(new DefaultFormatter(), stringEncoder);
   }
 
   @Override
-  public PropertyEntry encode(final PropertyEntry entry) throws EncoderException {
-    if (entry instanceof PlainTextNameValuePropertyEntry) {
-      final PlainTextNameValuePropertyEntry pnvpEntry = (PlainTextNameValuePropertyEntry) entry;
-      final String formatted = formatter.format(pnvpEntry.getName(), pnvpEntry.getValue());
-      final String encoded = stringEncoder.encode(formatted);
-      return new EncodedNameValuePropertyEntry(pnvpEntry.getName(), encoded);
-    }
-
-    return entry;
+  public EncodedNameValuePropertyEntry encode(final PlainTextNameValuePropertyEntry entry) throws NullPointerException,
+      EncoderException {
+    final String formatted = formatter.format(entry);
+    final String encoded = stringEncoder.encode(formatted);
+    return new EncodedNameValuePropertyEntry(entry.getName(), encoded);
   }
 }

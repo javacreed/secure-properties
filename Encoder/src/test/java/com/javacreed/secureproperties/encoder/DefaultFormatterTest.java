@@ -23,6 +23,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.javacreed.api.secureproperties.encoder.DefaultFormatter;
+import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
 
 /**
  *
@@ -33,7 +34,7 @@ public class DefaultFormatterTest {
   @Test
   public void test() {
     final DefaultFormatter encoder = new DefaultFormatter();
-    final String encoded = encoder.format("java", "creed");
+    final String encoded = encoder.format(new PlainTextNameValuePropertyEntry("java", "creed"));
     Assert.assertNotNull(encoded);
     Assert.assertTrue(encoded.matches("\\d+,4,java,5,creed"));
   }

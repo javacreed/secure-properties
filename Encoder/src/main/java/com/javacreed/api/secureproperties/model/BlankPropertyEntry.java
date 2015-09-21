@@ -19,18 +19,36 @@
  */
 package com.javacreed.api.secureproperties.model;
 
+/**
+ * Represents a blank line within the properties file. This has not value from an application point of view, but was
+ * added to preserve the file structure.
+ *
+ * @author Albert Attard
+ */
 public class BlankPropertyEntry extends BasicPropertyEntry {
 
+  /**
+   * Creates an instance of this class with a blank/empty string
+   */
   public BlankPropertyEntry() {
     this("");
   }
 
-  public BlankPropertyEntry(final String line) {
+  /**
+   * Creates an instance of this class with given {@code line}. This constructor does not check whether the given
+   * {@code line} is actually blank or not. The given {@code line} cannot be {@code null}.
+   *
+   * @param line
+   *          the blank line (which cannot be {@code null})
+   * @throws NullPointerException
+   *           if the given {@code link} is {@code null}
+   */
+  public BlankPropertyEntry(final String line) throws NullPointerException {
     super(line);
   }
 
   @Override
   public String toString() {
-    return "Blank";
+    return "(Blank Line)";
   }
 }

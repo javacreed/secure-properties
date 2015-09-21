@@ -47,8 +47,8 @@ public class DefaultLinePropertyEntryParserTest {
     final EncodedNameValuePropertyEntry envPropertyEntry = (EncodedNameValuePropertyEntry) propertyEntry;
     Assert.assertEquals("password", envPropertyEntry.getName());
     Assert
-        .assertEquals(
-            "2a9beaced9f3f73503bf7e44e15abb915ee747f1ac772267d434f50034a6587f59f23b5737e567eff105f19184235eb7d836a17bc63bd6167b67a4b3182fbde4",
-            envPropertyEntry.getValue());
+    .assertEquals(
+        "2a9beaced9f3f73503bf7e44e15abb915ee747f1ac772267d434f50034a6587f59f23b5737e567eff105f19184235eb7d836a17bc63bd6167b67a4b3182fbde4",
+        envPropertyEntry.getValue());
   }
 }

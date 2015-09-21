@@ -20,18 +20,25 @@
 package com.javacreed.api.secureproperties.decoder;
 
 import com.javacreed.api.secureproperties.encoder.EncoderException;
-import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
+import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
 
 /**
+ * Parses an encoded string into a {@link PlainTextNameValuePropertyEntry}.
+ *
+ * @author Albert Attard
  */
 public interface Parser {
 
   /**
+   * Parses the given {@code formatted} into a {@link PlainTextNameValuePropertyEntry}.
    *
    * @param formatted
-   * @return
+   *          the formatted property value (which cannot be {@code null})
+   * @return an instance of the {@link PlainTextNameValuePropertyEntry}
    * @throws EncoderException
+   *           if the given {@code formatted} property value cannot be parsed
    * @throws NullPointerException
+   *           if the given {@code formatted} property value is {@code null}
    */
-  NameValuePropertyEntry parse(String formatted) throws EncoderException, NullPointerException;
+  PlainTextNameValuePropertyEntry parse(String formatted) throws EncoderException, NullPointerException;
 }

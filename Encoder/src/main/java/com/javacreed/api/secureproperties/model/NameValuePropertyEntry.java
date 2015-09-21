@@ -19,23 +19,41 @@
  */
 package com.javacreed.api.secureproperties.model;
 
+import java.util.Objects;
+
 import net.jcip.annotations.Immutable;
 
+/**
+ * Represents a basic name value property
+ *
+ * @author Albert Attard
+ */
 @Immutable
-public class NameValuePropertyEntry extends AbstractPropertyEntry {
+public class NameValuePropertyEntry extends NamedPropertyEntry {
 
-  protected final String name;
+  /** The property's value (which cannot be null) */
   protected final String value;
 
-  public NameValuePropertyEntry(final String name, final String value) {
-    this.name = name;
-    this.value = value;
+  /**
+   * Creates an instance of this class
+   *
+   * @param name
+   *          the property name (which cannot be {@code null})
+   * @param value
+   *          the property name (which cannot be {@code null})
+   * @throws NullPointerException
+   *           if any of the parameters are {@code null}
+   */
+  public NameValuePropertyEntry(final String name, final String value) throws NullPointerException {
+    super(name);
+    this.value = Objects.requireNonNull(value);
   }
 
-  public String getName() {
-    return name;
-  }
-
+  /**
+   * Returns the property value
+   *
+   * @return the property value (which will not )
+   */
   public String getValue() {
     return value;
   }

@@ -19,19 +19,29 @@
  */
 package com.javacreed.api.secureproperties.encoder;
 
+import net.jcip.annotations.Immutable;
+
 /**
+ * The top level encoder exception
  *
+ * @author Albert Attard
  */
+@Immutable
 public class EncoderException extends RuntimeException {
 
-  /** */
+  /** The serial version id */
   private static final long serialVersionUID = 5457537806374311275L;
 
   /**
+   * A generic method which returns the given throwable if this is an instance of this class, otherwise it returns this
+   * with the given message and cause as its parameters.
    *
    * @param message
+   *          the exception message
    * @param e
-   * @return
+   *          the cause of the problem
+   * @return the given throwable if this is an instance of this class, otherwise it returns this with the given message
+   *         and cause as its parameters
    */
   public static EncoderException launder(final String message, final Throwable e) {
     if (e instanceof EncoderException) {
@@ -42,34 +52,49 @@ public class EncoderException extends RuntimeException {
   }
 
   /**
+   * A generic method which returns the given throwable if this is an instance of this class, otherwise it returns this
+   * with the given cause as its parameters.
+   *
+   * This is equivalent to {@code EncoderException.launder(null, e)}
    *
    * @param e
-   * @return
+   *          the cause of the problem
+   * @return the given throwable if this is an instance of this class, otherwise it returns this with the given cause as
+   *         its parameters
+   *
+   * @see #launder(String, Throwable)
    */
   public static EncoderException launder(final Throwable e) {
     return EncoderException.launder(null, e);
   }
 
   /**
+   * Creates an instance of this class
    *
    * @param message
+   *          the exception message (which can be {@code null})
    */
   public EncoderException(final String message) {
     super(message);
   }
 
   /**
+   * Creates an instance of this class
    *
    * @param message
+   *          the exception message (which can be {@code null})
    * @param cause
+   *          the cause (which can be {@code null})
    */
   public EncoderException(final String message, final Throwable cause) {
     super(message, cause);
   }
 
   /**
+   * Creates an instance of this class
    *
    * @param cause
+   *          the cause (which can be {@code null})
    */
   public EncoderException(final Throwable cause) {
     super(cause);

@@ -19,8 +19,14 @@
  */
 package com.javacreed.api.secureproperties.parser.db;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
 import java.util.Objects;
+
+import javax.sql.DataSource;
 
 import com.javacreed.api.secureproperties.model.PropertyEntry;
 import com.javacreed.api.secureproperties.parser.AbstractPropertiesParser;
@@ -30,6 +36,29 @@ import com.javacreed.api.secureproperties.parser.AbstractPropertiesParser;
  * @author Albert Attard
  */
 public class ResultSetPropertyParser extends AbstractPropertiesParser {
+
+  public static List<PropertyEntry> readAndClose(final Connection connection, final String query) throws SQLException {
+    return ResultSetPropertyParser.readAndClose(connection, query, new DefaultResultSetExtractor());
+  }
+
+  public static List<PropertyEntry> readAndClose(final Connection connection, final String query,
+      final ResultSetExtractor extractor) throws SQLException {
+    try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(query)) {
+      final ResultSetPropertyParser parser = new ResultSetPropertyParser(resultSet, extractor);
+      return parser.getProperties();
+    }
+  }
+
+  public static List<PropertyEntry> readAndClose(final DataSource dataSource, final String query) throws SQLException {
+    return ResultSetPropertyParser.readAndClose(dataSource, query, new DefaultResultSetExtractor());
+  }
+
+  public static List<PropertyEntry> readAndClose(final DataSource dataSource, final String query,
+      final ResultSetExtractor extractor) throws SQLException {
+    try (Connection connection = dataSource.getConnection()) {
+      return ResultSetPropertyParser.readAndClose(connection, query, extractor);
+    }
+  }
 
   /** */
   private final ResultSet resultSet;

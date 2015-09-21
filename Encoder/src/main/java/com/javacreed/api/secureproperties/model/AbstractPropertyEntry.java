@@ -20,18 +20,8 @@
 package com.javacreed.api.secureproperties.model;
 
 /**
+ * A skeleton implementation of the {@link PropertyEntry}
+ *
+ * @author Albert Attard
  */
-public abstract class AbstractPropertyEntry implements PropertyEntry {
-
-  // @Override
-  // public void write(PropertyEntryWriter writer) throws EncoderException {
-  // if(writer.accepts(this)) {
-  // writer.write(this);
-  // }
-  // }
-
-  // @Override
-  // public PropertyEntry encode(Encoder encoder) throws EncoderException {
-  // return this;
-  // }
-}
+public abstract class AbstractPropertyEntry implements PropertyEntry {}

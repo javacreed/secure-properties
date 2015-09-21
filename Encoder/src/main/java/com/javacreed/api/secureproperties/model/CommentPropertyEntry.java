@@ -19,9 +19,24 @@
  */
 package com.javacreed.api.secureproperties.model;
 
+/**
+ * Represents a comment line within the properties file. This has not value from an application point of view, but was
+ * added to preserve the file structure.
+ *
+ * @author Albert Attard
+ */
 public class CommentPropertyEntry extends BasicPropertyEntry {
 
-  public CommentPropertyEntry(final String line) {
+  /**
+   * Creates an instance of this class with given {@code line}. This constructor does not check whether the given
+   * {@code line} is actually a comment or not. The given {@code line} cannot be {@code null}.
+   *
+   * @param line
+   *          the comment line (which cannot be {@code null})
+   * @throws NullPointerException
+   *           if the given {@code link} is {@code null}
+   */
+  public CommentPropertyEntry(final String line) throws NullPointerException {
     super(line);
   }
 

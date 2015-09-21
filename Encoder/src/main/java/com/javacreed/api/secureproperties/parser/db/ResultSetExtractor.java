@@ -25,6 +25,8 @@ import java.sql.SQLException;
 import com.javacreed.api.secureproperties.model.PropertyEntry;
 
 /**
+ *
+ * @author Albert Attard
  */
 public interface ResultSetExtractor {
 

@@ -28,7 +28,9 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
+import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.PropertyEntry;
 import com.javacreed.api.secureproperties.parser.db.ResultSetPropertyParser;
 import com.javacreed.secureproperties.writer.db.AbstractDbTest;
@@ -41,8 +43,11 @@ public class ResultSetPropertyParserTest extends AbstractDbTest {
 
   @Test
   public void test() throws SQLException {
-    dbHelper.execute("INSERT INTO `" + defaultTableName + "` VALUES ('name1', 'value1')");
-    dbHelper.execute("INSERT INTO `" + defaultTableName + "` VALUES ('name2', 'value2')");
+    insertData("name1", "value1");
+    insertData("name2", "{pln}value2");
+    insertData(
+        "name3",
+        "{enc}5746a9afdf5724dfc344f875a5dc17bd67b261906896f6da09721578e96c22e11bd9fc2a25ab85a3c286359056a02230b949fa40cd0f68a4499f4220ada3304b");
 
     try (Connection connection = dbHelper.getConnection();
         Statement statement = connection.createStatement();
@@ -50,7 +55,7 @@ public class ResultSetPropertyParserTest extends AbstractDbTest {
       final ResultSetPropertyParser parser = new ResultSetPropertyParser(resultSet);
 
       final List<PropertyEntry> properties = parser.getProperties();
-      Assert.assertEquals(2, properties.size());
+      Assert.assertEquals(3, properties.size());
 
       PropertyEntry entry = properties.get(0);
       Assert.assertTrue(entry instanceof NameValuePropertyEntry);
@@ -59,10 +64,19 @@ public class ResultSetPropertyParserTest extends AbstractDbTest {
       Assert.assertEquals("value1", nameValuePropertyEntry.getValue());
 
       entry = properties.get(1);
-      Assert.assertTrue(entry instanceof NameValuePropertyEntry);
-      nameValuePropertyEntry = (NameValuePropertyEntry) entry;
+      Assert.assertTrue(entry instanceof PlainTextNameValuePropertyEntry);
+      nameValuePropertyEntry = (PlainTextNameValuePropertyEntry) entry;
       Assert.assertEquals("name2", nameValuePropertyEntry.getName());
       Assert.assertEquals("value2", nameValuePropertyEntry.getValue());
+
+      entry = properties.get(2);
+      Assert.assertTrue(entry instanceof EncodedNameValuePropertyEntry);
+      nameValuePropertyEntry = (EncodedNameValuePropertyEntry) entry;
+      Assert.assertEquals("name3", nameValuePropertyEntry.getName());
+      Assert
+          .assertEquals(
+              "5746a9afdf5724dfc344f875a5dc17bd67b261906896f6da09721578e96c22e11bd9fc2a25ab85a3c286359056a02230b949fa40cd0f68a4499f4220ada3304b",
+              nameValuePropertyEntry.getValue());
     }
   }
 

@@ -39,6 +39,14 @@ import com.javacreed.api.secureproperties.model.PropertyEntry;
 import com.javacreed.api.secureproperties.parser.io.ReaderPropertyParser;
 import com.javacreed.api.secureproperties.writer.io.LinePropertyEntryWriter;
 
+/**
+ * Tests the default properties using a custom encoder, based on Triple DES
+ * 
+ * @author Albert Attard
+ *
+ * @see TripleDesCipherFactory
+ * @see DefaultPropertiesEncoder
+ */
 public class DefaultPropertiesCustomEncoderTest {
 
   @Test
@@ -47,9 +55,10 @@ public class DefaultPropertiesCustomEncoderTest {
     Files.copy(getClass().getResourceAsStream("/samples/properties/file.001.properties"), Paths.get(path),
         StandardCopyOption.REPLACE_EXISTING);
 
-    // Parse the Properties
+    /* Parse the Properties */
     final List<PropertyEntry> properties = ReaderPropertyParser.readAndClose(path);
 
+    /* The custom encoder based on triple DES */
     final TripleDesCipherFactory cipherFactory = new TripleDesCipherFactory("THIS is MY new Password!");
 
     final PropertiesEncoder propertiesEncoder = new DefaultPropertiesEncoder(cipherFactory);

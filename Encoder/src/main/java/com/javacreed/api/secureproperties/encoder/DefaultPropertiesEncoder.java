@@ -25,22 +25,34 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import net.jcip.annotations.Immutable;
+import net.jcip.annotations.NotThreadSafe;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.javacreed.api.secureproperties.cipher.CipherFactory;
+import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
+import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.PropertyEntry;
 
 /**
+ * The default implementation of the {@link PropertyEncoder}
  *
  * @author Albert Attard
  */
+@Immutable
 public class DefaultPropertiesEncoder implements PropertiesEncoder {
 
   /**
+   * The internal implementation of {@link EncodedProperties}. This class is marked as non-thread safe as its fields are
+   * not protected/guarded by a lock. On the other hand this class is only instantiated and modified from within the
+   * {@link DefaultPropertiesEncoder#encode(Iterator)} method. Therefore, once available, this object can be safely
+   * shared by more than one thread.
    *
    * @author Albert Attard
    */
+  @NotThreadSafe
   private static class DefaultEncodedProperties implements EncodedProperties {
 
     private int encoded;
@@ -66,44 +78,84 @@ public class DefaultPropertiesEncoder implements PropertiesEncoder {
   /** Class logger */
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultPropertiesEncoder.class);
 
-  /** */
-  private PropertyEncoder encoder;
+  /** The encoder that will be used */
+  private final PropertyEncoder encoder;
 
+  /**
+   * Creates an instance of this class using the default configuration
+   *
+   * @see DefaultPropertyEncoder
+   */
   public DefaultPropertiesEncoder() {
     this("javacreed");
   }
 
-  public DefaultPropertiesEncoder(final CipherFactory cipherFactory) {
-    this.encoder = new DefaultPropertyEncoder(cipherFactory);
+  /**
+   * Creates an instance of this class using the given cipher factory
+   *
+   * @param cipherFactory
+   *          the cipher factory to be used (which cannot be {@code null})
+   * @throws NullPointerException
+   *           if the given {@code cipherFactory} is {@code null}
+   *
+   * @see DefaultPropertyEncoder
+   */
+  public DefaultPropertiesEncoder(final CipherFactory cipherFactory) throws NullPointerException {
+    this(new DefaultPropertyEncoder(cipherFactory));
   }
 
+  /**
+   * Creates an instance of this class using the given property encoder
+   *
+   * @param encoder
+   *          the property encoder to be used (which cannot be {@code null})
+   * @throws NullPointerException
+   *           if the given {@code encoder} is {@code null}
+   */
   public DefaultPropertiesEncoder(final PropertyEncoder encoder) throws NullPointerException {
     this.encoder = Objects.requireNonNull(encoder);
   }
 
-  public DefaultPropertiesEncoder(final String key) {
+  /**
+   * Creates an instance of this class using the default property encoder with the given key.
+   *
+   * @param key
+   *          the key to be used with the default property encoder
+   * @throws NullPointerException
+   *           if the given {@code key} is {@code null}
+   *
+   * @see DefaultPropertyEncoder
+   */
+  public DefaultPropertiesEncoder(final String key) throws NullPointerException {
     this(new DefaultPropertyEncoder(key));
   }
 
   @Override
-  public EncodedProperties encode(final Iterable<PropertyEntry> propertiesEntries) throws EncoderException {
+  public EncodedProperties encode(final Iterable<PropertyEntry> propertiesEntries) throws NullPointerException,
+      EncoderException {
     return encode(propertiesEntries.iterator());
   }
 
   @Override
-  public EncodedProperties encode(final Iterator<PropertyEntry> propertiesEntries) throws EncoderException,
-      IllegalStateException {
+  public EncodedProperties encode(final Iterator<PropertyEntry> propertiesEntries) throws NullPointerException,
+      EncoderException, IllegalStateException {
     final DefaultEncodedProperties encodedProperties = new DefaultEncodedProperties();
 
     while (propertiesEntries.hasNext()) {
       final PropertyEntry entry = propertiesEntries.next();
       try {
-        final PropertyEntry encodedEntry = encoder.encode(entry);
-        encodedProperties.entries.add(encodedEntry);
-        if (encodedEntry != entry) {
+        /*
+         * Encode all properties of type PlainTextNameValuePropertyEntry. The other properties do not need to be
+         * encoded. Just add them to the list
+         */
+        if (entry instanceof PlainTextNameValuePropertyEntry) {
+          final EncodedNameValuePropertyEntry encodedEntry = encoder.encode((PlainTextNameValuePropertyEntry) entry);
+          encodedProperties.entries.add(encodedEntry);
           DefaultPropertiesEncoder.LOGGER.debug("The property {} was modified (encoded) thus we need to write them",
               encodedEntry);
           encodedProperties.encoded++;
+        } else {
+          encodedProperties.entries.add(entry);
         }
       } catch (final RuntimeException e) {
         DefaultPropertiesEncoder.LOGGER.error("Failed to encode property {}", entry, e);
@@ -112,14 +164,5 @@ public class DefaultPropertiesEncoder implements PropertiesEncoder {
     }
 
     return encodedProperties;
-  }
-
-  public void setEncoder(final PropertyEncoder encoder) {
-    this.encoder = Objects.requireNonNull(encoder);
-  }
-
-  public DefaultPropertiesEncoder use(final PropertyEncoder encoder) throws NullPointerException {
-    setEncoder(encoder);
-    return this;
   }
 }

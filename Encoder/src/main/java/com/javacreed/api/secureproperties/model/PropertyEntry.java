@@ -20,20 +20,9 @@
 package com.javacreed.api.secureproperties.model;
 
 /**
- *
+ * Represents a property. A property entry can be anything from a comment in a property file, a name value pair or
+ * something more complex.
  */
 public interface PropertyEntry {
 
-  // /**
-  // * @param encoder
-  // * @return
-  // * @throws EncoderException
-  // */
-  // PropertyEntry encode(Encoder encoder) throws EncoderException;
-
-  // /**
-  // * @param writer
-  // * @throws EncoderException
-  // */
-  // void write(PropertyEntryWriter writer) throws EncoderException;
 }

@@ -19,9 +19,25 @@
  */
 package com.javacreed.api.secureproperties.encoder;
 
+import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
+
 /**
+ * Formats an instance of plain text property entry into a single string. The formatting does not necessary obfuscate
+ * the original message. It basically transforms the given plain text property entry into one string. The output of this
+ * class is usually used as an input by the {@link StringEncoder} class
+ *
+ * @author Albert Attard
  */
 public interface Formatter {
 
-  String format(String name, String value);
+  /**
+   * Returns a formatted string representing the given {@code propertyEntry}
+   *
+   * @param propertyEntry
+   *          the property entry to be formatted (which cannot be {@code null})
+   * @return a formatted string (which will not be {@code null})
+   * @throws NullPointerException
+   *           if the given {@code propertyEntry} is {@code null}
+   */
+  String format(PlainTextNameValuePropertyEntry propertyEntry) throws NullPointerException;
 }

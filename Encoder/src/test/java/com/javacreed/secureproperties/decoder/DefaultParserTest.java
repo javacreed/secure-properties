@@ -29,6 +29,10 @@ import com.javacreed.api.secureproperties.decoder.DefaultParser;
 import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
 
 /**
+ * Tests the parser's default implementation {@link DefaultParser}
+ *
+ * @author Albert Attard
+ * @see DefaultParser
  */
 public class DefaultParserTest {
 
