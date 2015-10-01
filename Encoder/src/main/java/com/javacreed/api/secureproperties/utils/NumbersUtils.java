@@ -20,17 +20,26 @@
 package com.javacreed.api.secureproperties.utils;
 
 /**
+ * Provides common/utilities methods related to numbers.
+ *
+ * @author Albert Attard
  */
 public class NumbersUtils {
 
   /**
+   * Verifies the value and fails if the given value is outside the given range.
    *
    * @param value
+   *          the value to be verified
    * @param min
+   *          the minimum value (inclusive)
    * @param max
+   *          the maximum value (inclusive)
    * @param fieldName
-   * @return
+   *          the fields name (which is used a part of the exception message)
+   * @return the given value
    * @throws IllegalArgumentException
+   *           if the given value is lower than min or greater than max
    */
   public static int inRange(final int value, final int min, final int max, final String fieldName)
       throws IllegalArgumentException {
@@ -43,12 +52,17 @@ public class NumbersUtils {
   }
 
   /**
+   * Verifies that the given number is one of the given set of values
    *
    * @param value
+   *          the value to be verified
    * @param fieldName
+   *          the fields name (which is used a part of the exception message)
    * @param values
-   * @return
+   *          the set of values
+   * @return the given value
    * @throws IllegalArgumentException
+   *           if the given value is not one of the given set of values
    */
   public static int oneOf(final int value, final String fieldName, final int... values) throws IllegalArgumentException {
     for (final int v : values) {
@@ -61,7 +75,7 @@ public class NumbersUtils {
   }
 
   /**
-   *
+   * This class should not be instantiated
    */
   private NumbersUtils() {}
 }

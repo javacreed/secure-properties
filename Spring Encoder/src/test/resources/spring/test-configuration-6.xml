@@ -24,12 +24,13 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<bean id="propertyConfigurer"
-		class="com.javacreed.api.secureproperties.spring.PropertiesFilePlaceholderConfigurer">
-		<property name="modifiableLocations">
-			<list>
-				<value>file:target/samples/properties/file.001.properties</value>
-			</list>
-		</property>
+		class="com.javacreed.api.secureproperties.spring.PropertiesTablePlaceholderConfigurer">
 	</bean>
 
+	<bean name="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="driverClassName" value="org.h2.Driver" />
+		<property name="url" value="jdbc:h2:./target/test" />
+		<property name="username" value="sa" />
+		<property name="password" value="" />
+	</bean>
 </beans>

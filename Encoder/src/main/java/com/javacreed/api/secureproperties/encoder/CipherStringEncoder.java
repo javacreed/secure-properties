@@ -26,7 +26,7 @@ import com.javacreed.api.secureproperties.utils.CipherUtils;
 
 /**
  * Cipher based string encoder and default implementation of the {@link StringEncoder} interface.
- * 
+ *
  * The encoding process is delegated to the {@link CipherUtils#encode(String, CipherFactory)} static method
  *
  * @author Albert Attard
@@ -42,7 +42,7 @@ public class CipherStringEncoder extends AbstractCipherBase implements StringEnc
 
   /**
    * Creates an instance of this class using the given cipher factory
-   * 
+   *
    * @param cipherFactory
    *          the cipher factory to be used (which cannot be {@code null})
    * @throws NullPointerException
@@ -60,7 +60,7 @@ public class CipherStringEncoder extends AbstractCipherBase implements StringEnc
    *          the password (which cannot be {@code null})
    * @throws NullPointerException
    *           if the given {@code key} is {@code null}
-   * 
+   *
    * @see AesCipherFactory
    */
   public CipherStringEncoder(final String key) throws NullPointerException {

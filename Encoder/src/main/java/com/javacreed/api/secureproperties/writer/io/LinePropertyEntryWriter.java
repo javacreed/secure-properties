@@ -119,8 +119,8 @@ public class LinePropertyEntryWriter extends AbstractPropertyEntryWriter {
    * @throws Exception
    */
   public static void writeAndClose(final Writer writer, final EncodedProperties properties) throws Exception {
-    // TODO: this should be moved elsewhere
     final LinePropertyEntryWriter lpew = new LinePropertyEntryWriter(writer);
+    // TODO: this should be moved elsewhere
     try {
       lpew.begin();
       for (final PropertyEntry entry : properties.getEntries()) {

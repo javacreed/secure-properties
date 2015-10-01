@@ -59,7 +59,7 @@ public class DefaultFormatter implements Formatter {
 
   /**
    * Creates an instance of this class with the default configuration.
-   * 
+   *
    * @see SecureRandom
    */
   public DefaultFormatter() {
@@ -74,7 +74,7 @@ public class DefaultFormatter implements Formatter {
    * Furthermore, larger padding length also increase the overall message length. The formatter takes a minimum length
    * in order to disguise short messages. This has no effect of long values. This ensures that the formatted string is
    * of at least some length.
-   * 
+   *
    * @param paddingLength
    *          the padding length (which should be between 1 and 16 both inclusive)
    * @param minimumLength
@@ -90,13 +90,13 @@ public class DefaultFormatter implements Formatter {
 
   /**
    * Creates an instance of this class.
-   * 
+   *
    * The padding is a set of random numbers which length is defined by the {@code paddingLength}. These random numbers
    * contribute to unique messages. The larger this value the higher the probability of unique messages it is.
    * Furthermore, larger padding length also increase the overall message length. The formatter takes a minimum length
    * in order to disguise short messages. This has no effect of long values. This ensures that the formatted string is
    * of at least some length.
-   * 
+   *
    * @param random
    *          the random number generator
    * @param paddingLength

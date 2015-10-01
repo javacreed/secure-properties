@@ -42,7 +42,7 @@ public class AbstractCipherBase {
   /**
    * Creates an instance of this class using the {@link AesCipherFactory} default cipher factory with the default
    * configuration.
-   * 
+   *
    * @see AesCipherFactory
    */
   public AbstractCipherBase() {
@@ -69,7 +69,7 @@ public class AbstractCipherBase {
    *          the password (which cannot be {@code null})
    * @throws NullPointerException
    *           if the given {@code key} is {@code null}
-
+   *
    * @see AesCipherFactory
    */
   public AbstractCipherBase(final String key) throws NullPointerException {

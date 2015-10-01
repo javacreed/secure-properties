@@ -41,7 +41,7 @@ import com.javacreed.api.secureproperties.writer.io.LinePropertyEntryWriter;
 
 /**
  * Tests the default properties using a custom encoder, based on Triple DES
- * 
+ *
  * @author Albert Attard
  *
  * @see TripleDesCipherFactory

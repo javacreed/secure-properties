@@ -22,15 +22,20 @@ package com.javacreed.api.secureproperties.utils;
 import java.util.Formatter;
 
 /**
+ * Provides common/utilities methods related to conversion between HEX string to bytes and vice versa.
  *
+ * @author Albert Attard
  */
 public class HexUtils {
 
   /**
+   * Converts the given hex string to byte array
    *
    * @param hexString
-   * @return
+   *          the hex string to be converted to bytes (which cannot be {@code null})
+   * @return the byte array
    * @throws NullPointerException
+   *           if the given hex string is {@code null}
    */
   public static byte[] toByteArray(final String hexString) throws NullPointerException {
     final int length = hexString.length();
@@ -43,10 +48,13 @@ public class HexUtils {
   }
 
   /**
+   * Converts the given byte array to hex string
    *
    * @param data
-   * @return
+   *          the byte array to be converted to hex string (which cannot be {@code null})
+   * @return the converted hex string
    * @throws NullPointerException
+   *           if the given byte array is {@code null}
    */
   public static String toHexString(final byte[] data) throws NullPointerException {
     try (Formatter formatter = new Formatter()) {

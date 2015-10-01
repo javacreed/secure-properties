@@ -31,7 +31,7 @@ public interface PropertyEncoder {
 
   /**
    * Encodes a plain text property into an encoded property entry
-   * 
+   *
    * @param entry
    *          the property to be encoded (which cannot be {@code null})
    * @return the encoded property

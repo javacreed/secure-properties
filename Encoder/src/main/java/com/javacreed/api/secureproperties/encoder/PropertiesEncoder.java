@@ -25,14 +25,14 @@ import com.javacreed.api.secureproperties.model.PropertyEntry;
 
 /**
  * Encodes a list of properties
- * 
+ *
  * @author Albert Attard
  */
 public interface PropertiesEncoder {
 
   /**
    * Encodes the given properties, if encoding is necessary, and returns the encoded properties
-   * 
+   *
    * @param propertiesEntries
    *          the properties to be encoded
    * @return the encoded properties
@@ -45,7 +45,7 @@ public interface PropertiesEncoder {
 
   /**
    * Encodes the given properties, if encoding is necessary, and returns the encoded properties
-   * 
+   *
    * @param propertiesEntries
    *          the properties to be encoded
    * @return the encoded properties

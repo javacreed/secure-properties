@@ -38,7 +38,8 @@ public class SpringPropertiesTest {
   public void test() throws IOException {
 
     final String[] configurations = { "test-configuration-1.xml", "test-configuration-2.xml",
-        "test-configuration-3.xml", "test-configuration-4.xml", "test-configuration-5.xml" };
+        "test-configuration-3.xml", "test-configuration-4.xml", "test-configuration-5.xml",
+    /* "test-configuration-6.xml" */};
 
     /*
      * The source properties file that contains the plain text password and the target properties file from where the

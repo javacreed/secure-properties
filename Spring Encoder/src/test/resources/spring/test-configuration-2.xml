@@ -24,7 +24,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<bean id="propertyConfigurer"
-		class="com.javacreed.api.secureproperties.spring.EncodedPropertyPlaceholderConfigurer">
+		class="com.javacreed.api.secureproperties.spring.PropertiesFilePlaceholderConfigurer">
 		<property name="key" value="this is my new key" />
 		<property name="modifiableLocations">
 			<list>

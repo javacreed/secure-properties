@@ -28,13 +28,25 @@ import javax.sql.DataSource;
 
 import net.jcip.annotations.NotThreadSafe;
 
+import com.javacreed.api.secureproperties.encoder.EncodedProperties;
 import com.javacreed.api.secureproperties.encoder.EncoderException;
+import com.javacreed.api.secureproperties.model.DefaultValueLabel;
 import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
+import com.javacreed.api.secureproperties.model.PropertyEntry;
+import com.javacreed.api.secureproperties.model.ValueLabel;
+import com.javacreed.api.secureproperties.utils.ExceptionsUtils;
 import com.javacreed.api.secureproperties.writer.AbstractPropertyEntryWriter;
 
 /**
+ * Writes the properties to the database.
+ * <p>
+ * This class requires the database to support transactions. If the database does not support transactions, then the
+ * behaviour of this class may be compromised. The properties should be persisted only when the {@link #commit()} method
+ * is invoked. With a non-transactional database the properties may be persisted with every write instead when
+ * committed.
+ *
  * @author Albert Attard
  */
 @NotThreadSafe
@@ -52,7 +64,7 @@ public class DbPropertyEntryWriter extends AbstractPropertyEntryWriter {
 
     @Override
     public void handle(final EncodedNameValuePropertyEntry entry) throws Exception {
-      executeUpdate(entry.getName(), "{enc}" + Objects.requireNonNull(entry.getValue()));
+      executeUpdate(entry.getName(), valueLabel.getEncodedLabel() + Objects.requireNonNull(entry.getValue()));
     }
   }
 
@@ -84,12 +96,36 @@ public class DbPropertyEntryWriter extends AbstractPropertyEntryWriter {
 
     @Override
     public void handle(final PlainTextNameValuePropertyEntry entry) throws Exception {
-      executeUpdate(entry.getName(), "{pln}" + Objects.requireNonNull(entry.getValue()));
+      executeUpdate(entry.getName(), valueLabel.getPlainTextLabel() + Objects.requireNonNull(entry.getValue()));
     }
   }
 
   /** */
   public static final String DEFAULT_TABLE_NAME = "properties";
+
+  /**
+   *
+   * @param dataSource
+   * @param properties
+   * @throws Exception
+   */
+  public static void write(final DataSource dataSource, final EncodedProperties properties) throws Exception {
+    final DbPropertyEntryWriter dbpew = new DbPropertyEntryWriter(dataSource);
+
+    // TODO: this should be moved elsewhere
+    try {
+      dbpew.begin();
+      for (final PropertyEntry entry : properties.getEntries()) {
+        dbpew.write(entry);
+      }
+      dbpew.commit();
+    } catch (final Exception e) {
+      dbpew.failed(e);
+    }
+  }
+
+  /** */
+  private final ValueLabel valueLabel;
 
   /** */
   private final DataSource dataSource;
@@ -116,13 +152,31 @@ public class DbPropertyEntryWriter extends AbstractPropertyEntryWriter {
    * @throws NullPointerException
    */
   public DbPropertyEntryWriter(final DataSource dataSource, final String tableName) throws NullPointerException {
+    this(dataSource, new DefaultValueLabel(), tableName);
+  }
+
+  /**
+   *
+   * @param dataSource
+   * @param valueLabel
+   * @param tableName
+   * @throws NullPointerException
+   */
+  public DbPropertyEntryWriter(final DataSource dataSource, final ValueLabel valueLabel, final String tableName)
+      throws NullPointerException {
     this.dataSource = Objects.requireNonNull(dataSource);
+    this.valueLabel = Objects.requireNonNull(valueLabel);
     this.tableName = Objects.requireNonNull(tableName);
     registerHandlers();
   }
 
   @Override
   public void begin() throws EncoderException {
+    if (connection != null) {
+      throw new EncoderException(
+          "Another connection is already established.  Please close the previous connection first");
+    }
+
     try {
       connection = dataSource.getConnection();
       connection.setAutoCommit(false);
@@ -132,13 +186,16 @@ public class DbPropertyEntryWriter extends AbstractPropertyEntryWriter {
   }
 
   /**
-   *
+   * Closes the connection and suppressing any exceptions.
    */
   private void closeConnectionQuietly() {
     if (connection != null) {
       try {
         connection.close();
       } catch (final Exception e) {
+        if (ExceptionsUtils.isCausedBy(e, InterruptedException.class)) {
+          Thread.currentThread().interrupt();
+        }
         // Suppress error
       } finally {
         connection = null;
@@ -196,6 +253,8 @@ public class DbPropertyEntryWriter extends AbstractPropertyEntryWriter {
       connection.rollback();
     } catch (final SQLException e2) {
       throw EncoderException.launder(e2);
+    } finally {
+      closeConnectionQuietly();
     }
   }
 
