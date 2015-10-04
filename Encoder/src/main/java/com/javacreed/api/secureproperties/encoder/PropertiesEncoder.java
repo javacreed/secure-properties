@@ -28,7 +28,22 @@ import com.javacreed.api.secureproperties.model.PropertyEntry;
  *
  * @author Albert Attard
  */
-public interface PropertiesEncoder {
+public interface PropertiesEncoder extends PropertyEncoder {
+
+  /**
+   *
+   * @param propertiesEntries
+   * @throws EncoderException
+   */
+  DecodedProperties decode(Iterable<PropertyEntry> propertiesEntries) throws EncoderException;
+
+  /**
+   *
+   * @param propertiesEntries
+   * @return
+   * @throws EncoderException
+   */
+  DecodedProperties decode(Iterator<PropertyEntry> propertiesEntries) throws EncoderException;
 
   /**
    * Encodes the given properties, if encoding is necessary, and returns the encoded properties

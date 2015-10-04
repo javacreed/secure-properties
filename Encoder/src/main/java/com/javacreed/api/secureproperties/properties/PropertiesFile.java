@@ -24,39 +24,79 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.javacreed.api.secureproperties.decoder.DefaultPropertyDecoder;
-import com.javacreed.api.secureproperties.decoder.PropertyDecoder;
-import com.javacreed.api.secureproperties.encoder.DefaultPropertiesEncoder;
 import com.javacreed.api.secureproperties.encoder.EncodedProperties;
+import com.javacreed.api.secureproperties.encoder.EncoderException;
 import com.javacreed.api.secureproperties.encoder.PropertiesEncoder;
-import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
+import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
+import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.PropertyEntry;
+import com.javacreed.api.secureproperties.parser.io.DefaultLinePropertyEntryParser;
+import com.javacreed.api.secureproperties.parser.io.LinePropertyEntryParser;
 import com.javacreed.api.secureproperties.parser.io.ReaderPropertyParser;
 import com.javacreed.api.secureproperties.writer.io.LinePropertyEntryWriter;
 
-public class PropertiesFile {
+public class PropertiesFile extends AbstractProperties {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesFile.class);
 
   /** */
-  private final PropertyDecoder propertyDecoder = new DefaultPropertyDecoder();
+  private LinePropertyEntryParser lineParser = new DefaultLinePropertyEntryParser();
 
-  /** */
-  private final PropertiesEncoder encoder = new DefaultPropertiesEncoder();
+  public PropertiesFile() {}
 
   /**
    *
-   * @param file
-   * @return
-   * @throws Exception
+   * @param encoder
+   * @throws NullPointerException
    */
-  public Properties loadProperties(final File file) throws Exception {
-    final List<PropertyEntry> properties = ReaderPropertyParser.readAndClose(file);
+  public PropertiesFile(final PropertiesEncoder encoder) throws NullPointerException {
+    setEncoder(Objects.requireNonNull(encoder));
+  }
+
+  public String convertEncodedValue(final String value) {
+    return lineParser.convertEncodedValue(value);
+  }
+
+  public String convertPlainTextValue(final String value) {
+    return lineParser.convertPlainTextValue(value);
+  }
+
+  public String convertProperty(final String propertyName, final String propertyValue) {
+    if (propertyName != null && propertyValue != null) {
+      if (isEncodedValue(propertyValue)) {
+        try {
+          PropertiesFile.LOGGER.debug("Decoding property value: '{}'='{}'", propertyName, propertyValue);
+          final PlainTextNameValuePropertyEntry decoded = decode(propertyName, propertyValue);
+          return decoded.getValue();
+        } catch (final Exception e) {
+          throw EncoderException.launder("Failed to decode value", e);
+        }
+      }
+
+      if (isPlainTextValue(propertyValue)) {
+        return convertPlainTextValue(propertyValue);
+      }
+    }
+
+    return propertyValue;
+  }
+
+  public PlainTextNameValuePropertyEntry decode(final String propertyName, final String propertyValue) {
+    if (lineParser.isEncodedValue(propertyValue)) {
+      return decode(new EncodedNameValuePropertyEntry(propertyName, lineParser.convertEncodedValue(propertyValue)));
+    }
+
+    return decode(new EncodedNameValuePropertyEntry(propertyName, propertyValue));
+  }
+
+  public EncodedProperties encodeProperties(final File file) throws Exception {
+    final List<PropertyEntry> properties = ReaderPropertyParser.readAndClose(file, lineParser);
     if (PropertiesFile.LOGGER.isDebugEnabled()) {
       PropertiesFile.LOGGER.debug("File: {} has {} entries", file.getName(), properties.size());
       for (final PropertyEntry entry : properties) {
@@ -76,23 +116,35 @@ public class PropertiesFile {
       PropertiesFile.LOGGER.debug("No properties required encoding");
     }
 
-    return toProperties(encodedProperties);
+    return encodedProperties;
+  }
+
+  public boolean isEncodedValue(final String value) {
+    return lineParser.isEncodedValue(value);
+  }
+
+  public boolean isPlainTextValue(final String value) {
+    return lineParser.isPlainTextValue(value);
   }
 
   /**
    *
-   * @param encodedProperties
+   * @param file
    * @return
+   * @throws Exception
    */
-  public Properties toProperties(final EncodedProperties encodedProperties) {
-    final Properties properties = new Properties();
-    for (final PropertyEntry property : encodedProperties.getEntries()) {
-      if (property instanceof NameValuePropertyEntry) {
-        final NameValuePropertyEntry e = (NameValuePropertyEntry) propertyDecoder.decode(property);
-        properties.setProperty(e.getName(), e.getValue());
-      }
-    }
-
-    return properties;
+  public Properties loadProperties(final File file) throws Exception {
+    final EncodedProperties encodedProperties = encodeProperties(file);
+    return toProperties(encodedProperties);
   }
+
+  public void setLineParser(final LinePropertyEntryParser lineParser) throws NullPointerException {
+    this.lineParser = Objects.requireNonNull(lineParser);
+  }
+
+  public void setLineParserLabels(final String plainTextLabel, final String encodedLabel) throws NullPointerException,
+      IllegalArgumentException {
+    this.setLineParser(new DefaultLinePropertyEntryParser(plainTextLabel, encodedLabel));
+  }
+
 }

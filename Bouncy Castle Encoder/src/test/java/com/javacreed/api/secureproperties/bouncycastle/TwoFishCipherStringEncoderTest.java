@@ -35,5 +35,6 @@ public class TwoFishCipherStringEncoderTest {
   public void test() {
     final CipherStringEncoder encoder = new CipherStringEncoder(new TwoFishCipherFactory());
     Assert.assertEquals("8e1ceac71eae495d91015fc588f42eeb", encoder.encode("hello"));
+    Assert.assertEquals("hello", encoder.decode("8e1ceac71eae495d91015fc588f42eeb"));
   }
 }

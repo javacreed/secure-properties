@@ -17,24 +17,23 @@
  * limitations under the License.
  * #L%
  */
-package com.javacreed.secureproperties.adapter;
+package com.javacreed.secureproperties.encoder;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.javacreed.api.secureproperties.adapter.CipherStringAdapter;
+import com.javacreed.api.secureproperties.encoder.CipherStringEncoder;
 
 /**
  */
-public class CipherAdapterCustomKeyTest {
+public class CipherStringEncoderTest {
 
   /**
    *
    */
   @Test
   public void test() {
-    // Test the adapter with the default configurations
-    final CipherStringAdapter adapter = new CipherStringAdapter("test key");
+    final CipherStringEncoder adapter = new CipherStringEncoder();
     final String encoded = adapter.encode("hello");
     Assert.assertNotNull(encoded);
     Assert.assertNotEquals("hello", encoded);

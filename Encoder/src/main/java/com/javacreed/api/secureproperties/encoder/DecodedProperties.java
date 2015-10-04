@@ -17,26 +17,32 @@
  * limitations under the License.
  * #L%
  */
-package com.javacreed.api.secureproperties.decoder;
+package com.javacreed.api.secureproperties.encoder;
 
-import com.javacreed.api.secureproperties.encoder.EncoderException;
-import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.PropertyEntry;
 
 /**
  */
-public interface PropertyDecoder {
+public interface DecodedProperties {
 
   /**
-   * TODO: should we assume that the decoder will always accept and return a {@link NameValuePropertyEntry}? The other
-   * options are comments which I do not think they will need encoding. We are casting the return value at the moment
-   * which is not a good idea.
+   * The list of all properties in the same order these were observed
    *
-   * @param entry
-   * @return
-   * @throws EncoderException
-   * @throws NullPointerException
+   * @return list of all properties in the same order these were observed
    */
-  public PropertyEntry decode(PropertyEntry entry) throws EncoderException, NullPointerException;
+  Iterable<PropertyEntry> getEntries();
 
+  /**
+   * Returns the number of properties that were decoded
+   *
+   * @return the number of properties that were decoded
+   */
+  int getNumberOfDecodedProperties();
+
+  /**
+   * Returns {@code true} if at least one property was decoded, {@code false} otherwise
+   *
+   * @return {@code true} if at least one property was decoded, {@code false} otherwise
+   */
+  boolean wereDecoded();
 }

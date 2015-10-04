@@ -37,5 +37,6 @@ public class DesCipherStringEncoderTest {
   public void test() {
     final CipherStringEncoder encoder = new CipherStringEncoder(new DesCipherFactory());
     Assert.assertEquals("d48da9c7bf7fff4a", encoder.encode("hello"));
+    Assert.assertEquals("hello", encoder.decode("d48da9c7bf7fff4a"));
   }
 }

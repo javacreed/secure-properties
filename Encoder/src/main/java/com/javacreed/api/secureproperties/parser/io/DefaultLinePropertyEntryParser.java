@@ -19,12 +19,16 @@
  */
 package com.javacreed.api.secureproperties.parser.io;
 
+import java.util.Objects;
+
 import com.javacreed.api.secureproperties.model.BlankPropertyEntry;
 import com.javacreed.api.secureproperties.model.CommentPropertyEntry;
+import com.javacreed.api.secureproperties.model.DefaultValueLabel;
 import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.PropertyEntry;
+import com.javacreed.api.secureproperties.model.ValueLabel;
 import com.javacreed.api.secureproperties.parser.PropertyEntryParseException;
 
 /**
@@ -32,6 +36,41 @@ import com.javacreed.api.secureproperties.parser.PropertyEntryParseException;
  * @author Albert Attard
  */
 public class DefaultLinePropertyEntryParser implements LinePropertyEntryParser {
+
+  private ValueLabel valueLabel;
+
+  public DefaultLinePropertyEntryParser() {
+    this(new DefaultValueLabel());
+  }
+
+  public DefaultLinePropertyEntryParser(final String plainTextLabel, final String encodedLabel)
+      throws NullPointerException, IllegalArgumentException {
+    this(new DefaultValueLabel(plainTextLabel, encodedLabel));
+  }
+
+  public DefaultLinePropertyEntryParser(final ValueLabel valueLabel) throws NullPointerException {
+    this.valueLabel = Objects.requireNonNull(valueLabel);
+  }
+
+  @Override
+  public String convertEncodedValue(final String value) {
+    return value.substring(valueLabel.getEncodedLabel().length());
+  }
+
+  @Override
+  public String convertPlainTextValue(final String value) {
+    return value.substring(valueLabel.getPlainTextLabel().length());
+  }
+
+  @Override
+  public boolean isEncodedValue(final String value) {
+    return value.startsWith(valueLabel.getEncodedLabel());
+  }
+
+  @Override
+  public boolean isPlainTextValue(final String value) {
+    return value.startsWith(valueLabel.getPlainTextLabel());
+  }
 
   /**
    *
@@ -53,16 +92,21 @@ public class DefaultLinePropertyEntryParser implements LinePropertyEntryParser {
     if (line.matches("(?s).+=.*")) {
       final String parts[] = line.split("=", 2);
 
-      if (parts[1].startsWith("{enc}")) {
-        return new EncodedNameValuePropertyEntry(parts[0], parts[1].substring(5));
+      if (isEncodedValue(parts[1])) {
+        return new EncodedNameValuePropertyEntry(parts[0], convertEncodedValue(parts[1]));
       }
-      if (parts[1].startsWith("{pln}")) {
-        return new PlainTextNameValuePropertyEntry(parts[0], parts[1].substring(5));
+
+      if (isPlainTextValue(parts[1])) {
+        return new PlainTextNameValuePropertyEntry(parts[0], convertPlainTextValue(parts[1]));
       }
 
       return new NameValuePropertyEntry(parts[0], parts[1]);
     }
 
     throw new PropertyEntryParseException("Invalid property line");
+  }
+
+  public void setValueLabel(final ValueLabel valueLabel) {
+    this.valueLabel = valueLabel;
   }
 }

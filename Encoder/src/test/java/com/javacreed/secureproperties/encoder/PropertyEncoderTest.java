@@ -17,13 +17,13 @@
  * limitations under the License.
  * #L%
  */
-package com.javacreed.secureproperties.decoder;
+package com.javacreed.secureproperties.encoder;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.javacreed.api.secureproperties.decoder.DefaultPropertyDecoder;
-import com.javacreed.api.secureproperties.decoder.PropertyDecoder;
+import com.javacreed.api.secureproperties.encoder.DefaultPropertyEncoder;
+import com.javacreed.api.secureproperties.encoder.PropertyEncoder;
 import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.PropertyEntry;
@@ -32,7 +32,7 @@ import com.javacreed.api.secureproperties.model.PropertyEntry;
  *
  * @author Albert Attard
  */
-public class PropertyDecoderTest {
+public class PropertyEncoderTest {
 
   @Test
   public void test() {
@@ -42,7 +42,7 @@ public class PropertyDecoderTest {
 
     for (final String e : encoded) {
       final EncodedNameValuePropertyEntry envPropertyEntry = new EncodedNameValuePropertyEntry("password", e);
-      final PropertyDecoder decoder = new DefaultPropertyDecoder();
+      final PropertyEncoder decoder = new DefaultPropertyEncoder();
       final PropertyEntry entry = decoder.decode(envPropertyEntry);
       Assert.assertNotNull(entry);
       Assert.assertTrue(entry instanceof NameValuePropertyEntry);

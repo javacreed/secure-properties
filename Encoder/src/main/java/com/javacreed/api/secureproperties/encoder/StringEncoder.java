@@ -20,9 +20,23 @@
 package com.javacreed.api.secureproperties.encoder;
 
 /**
- * An encoder is able of taking plain text and transform it into encoded (encrypted) hex-text.
+ * An encoder is able of taking plain text and transform it into encoded (encrypted) hex-text. The decoder on the other
+ * hand, decodes a hex-string into a plain text string
  */
 public interface StringEncoder {
+
+  /**
+   * Decodes the given {@code encodedText} (hex-string) into a plain text string using a given configuration
+   *
+   * @param encodedText
+   *          the hex-string representing the encoded text (which cannot be {@code null})
+   * @return the decoded, plain-text, string (which will not be {@code null})
+   * @throws EncoderException
+   *           if an error occurs during the encoding
+   * @throws NullPointerException
+   *           if the given {@code encodedText} is {@code null}
+   */
+  String decode(String encodedText) throws EncoderException, NullPointerException;
 
   /**
    * Encodes the plain text into cipher text using a given configuration.

@@ -17,25 +17,27 @@
  * limitations under the License.
  * #L%
  */
-package com.javacreed.secureproperties.cipher.pbe;
+package com.javacreed.secureproperties.encoder;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.javacreed.api.secureproperties.cipher.pbe.TripleDesCipherFactory;
-import com.javacreed.api.secureproperties.decoder.CipherStringDecoder;
+import com.javacreed.api.secureproperties.encoder.CipherStringEncoder;
 
 /**
- *
  */
-public class TripleDesCipherStringDecoderTest {
+public class CipherStringEncoderCustomKeyTest {
 
   /**
    *
    */
   @Test
   public void test() {
-    final CipherStringDecoder encoder = new CipherStringDecoder(new TripleDesCipherFactory());
-    Assert.assertEquals("hello", encoder.decode("afba0dbd18e6a33d"));
+    // Test the adapter with the default configurations
+    final CipherStringEncoder adapter = new CipherStringEncoder("test key");
+    final String encoded = adapter.encode("hello");
+    Assert.assertNotNull(encoded);
+    Assert.assertNotEquals("hello", encoded);
+    Assert.assertEquals("hello", adapter.decode(encoded));
   }
 }

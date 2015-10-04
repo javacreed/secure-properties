@@ -17,25 +17,24 @@
  * limitations under the License.
  * #L%
  */
-package com.javacreed.secureproperties.cipher.pbe;
+package com.javacreed.api.secureproperties.writer;
 
-import org.junit.Assert;
-import org.junit.Test;
+import com.javacreed.api.secureproperties.encoder.EncodedProperties;
+import com.javacreed.api.secureproperties.model.PropertyEntry;
 
-import com.javacreed.api.secureproperties.cipher.pbe.DesCipherFactory;
-import com.javacreed.api.secureproperties.decoder.CipherStringDecoder;
+public class DefaultWriteAlgorithm {
 
-/**
- *
- */
-public class DesCipherStringDecoderTest {
+  private PropertyEntryWriter entryWriter;
 
-  /**
-   *
-   */
-  @Test
-  public void test() {
-    final CipherStringDecoder encoder = new CipherStringDecoder(new DesCipherFactory());
-    Assert.assertEquals("hello", encoder.decode("d48da9c7bf7fff4a"));
+  public void x(final EncodedProperties properties) {
+    try {
+      entryWriter.begin();
+      for (final PropertyEntry entry : properties.getEntries()) {
+        entryWriter.write(entry);
+      }
+      entryWriter.commit();
+    } catch (final Exception e) {
+      entryWriter.failed(e);
+    }
   }
 }

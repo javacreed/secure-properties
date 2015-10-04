@@ -26,10 +26,12 @@ import java.util.Objects;
 import com.javacreed.api.secureproperties.encoder.EncodedProperties;
 import com.javacreed.api.secureproperties.encoder.EncoderException;
 import com.javacreed.api.secureproperties.model.BasicPropertyEntry;
+import com.javacreed.api.secureproperties.model.DefaultValueLabel;
 import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
-import com.javacreed.api.secureproperties.model.PropertyEntry;
+import com.javacreed.api.secureproperties.model.ValueLabel;
+import com.javacreed.api.secureproperties.utils.EntryWriterUtils;
 import com.javacreed.api.secureproperties.writer.AbstractPropertyEntryWriter;
 
 /**
@@ -69,7 +71,8 @@ public class LinePropertyEntryWriter extends AbstractPropertyEntryWriter {
     @Override
     public void handle(final EncodedNameValuePropertyEntry entry) throws Exception {
       buffer.append(entry.getName());
-      buffer.append("={enc}");
+      buffer.append("=");
+      buffer.append(valueLabel.getEncodedLabel());
       buffer.append(entry.getValue());
     }
   }
@@ -107,7 +110,8 @@ public class LinePropertyEntryWriter extends AbstractPropertyEntryWriter {
     @Override
     public void handle(final PlainTextNameValuePropertyEntry entry) throws Exception {
       buffer.append(entry.getName());
-      buffer.append("={pln}");
+      buffer.append("=");
+      buffer.append(valueLabel.getPlainTextLabel());
       buffer.append(entry.getValue());
     }
   }
@@ -120,15 +124,8 @@ public class LinePropertyEntryWriter extends AbstractPropertyEntryWriter {
    */
   public static void writeAndClose(final Writer writer, final EncodedProperties properties) throws Exception {
     final LinePropertyEntryWriter lpew = new LinePropertyEntryWriter(writer);
-    // TODO: this should be moved elsewhere
     try {
-      lpew.begin();
-      for (final PropertyEntry entry : properties.getEntries()) {
-        lpew.write(entry);
-      }
-      lpew.commit();
-    } catch (final Exception e) {
-      lpew.failed(e);
+      EntryWriterUtils.write(lpew, properties);
     } finally {
       writer.close();
     }
@@ -140,6 +137,9 @@ public class LinePropertyEntryWriter extends AbstractPropertyEntryWriter {
   /** */
   private StringBuilder buffer;
 
+  /** */
+  private final ValueLabel valueLabel;
+
   /**
    *
    * @param writer
@@ -147,7 +147,18 @@ public class LinePropertyEntryWriter extends AbstractPropertyEntryWriter {
    *           if the given {@code writer} is {@code null}
    */
   public LinePropertyEntryWriter(final Writer writer) throws NullPointerException {
+    this(writer, new DefaultValueLabel());
+  }
+
+  /**
+   *
+   * @param writer
+   * @param valueLabel
+   * @throws NullPointerException
+   */
+  public LinePropertyEntryWriter(final Writer writer, final ValueLabel valueLabel) throws NullPointerException {
     this.writer = Objects.requireNonNull(writer);
+    this.valueLabel = Objects.requireNonNull(valueLabel);
 
     /*
      * Register the handler. Ideally this is done in a post construct method but the classes created below do not access

@@ -45,6 +45,32 @@ import com.javacreed.api.secureproperties.model.PropertyEntry;
 public class DefaultPropertiesEncoder implements PropertiesEncoder {
 
   /**
+   *
+   * @author Albert Attard
+   */
+  private static class DefaultDecodedProperties implements DecodedProperties {
+
+    private int decoded;
+    private final List<PropertyEntry> entries = new LinkedList<>();
+    private final List<PropertyEntry> unmodifiable = Collections.unmodifiableList(entries);
+
+    @Override
+    public Iterable<PropertyEntry> getEntries() {
+      return unmodifiable;
+    }
+
+    @Override
+    public int getNumberOfDecodedProperties() {
+      return decoded;
+    }
+
+    @Override
+    public boolean wereDecoded() {
+      return decoded > 0;
+    }
+  }
+
+  /**
    * The internal implementation of {@link EncodedProperties}. This class is marked as non-thread safe as its fields are
    * not protected/guarded by a lock. On the other hand this class is only instantiated and modified from within the
    * {@link DefaultPropertiesEncoder#encode(Iterator)} method. Therefore, once available, this object can be safely
@@ -131,6 +157,37 @@ public class DefaultPropertiesEncoder implements PropertiesEncoder {
   }
 
   @Override
+  public PlainTextNameValuePropertyEntry decode(final EncodedNameValuePropertyEntry entry) throws EncoderException,
+  NullPointerException {
+    return encoder.decode(entry);
+  }
+
+  @Override
+  public DecodedProperties decode(final Iterable<PropertyEntry> propertiesEntries) throws EncoderException {
+    return decode(propertiesEntries.iterator());
+  }
+
+  @Override
+  public DecodedProperties decode(final Iterator<PropertyEntry> propertiesEntries) throws EncoderException {
+    final DefaultDecodedProperties decoded = new DefaultDecodedProperties();
+    try {
+      while (propertiesEntries.hasNext()) {
+        final PropertyEntry entry = propertiesEntries.next();
+        if (entry instanceof EncodedNameValuePropertyEntry) {
+          decoded.entries.add(encoder.decode((EncodedNameValuePropertyEntry) entry));
+          decoded.decoded++;
+        } else {
+          decoded.entries.add(entry);
+        }
+      }
+    } catch (final RuntimeException e) {
+      throw EncoderException.launder(e);
+    }
+
+    return decoded;
+  }
+
+  @Override
   public EncodedProperties encode(final Iterable<PropertyEntry> propertiesEntries) throws NullPointerException,
       EncoderException {
     return encode(propertiesEntries.iterator());
@@ -165,4 +222,11 @@ public class DefaultPropertiesEncoder implements PropertiesEncoder {
 
     return encodedProperties;
   }
+
+  @Override
+  public EncodedNameValuePropertyEntry encode(final PlainTextNameValuePropertyEntry entry) throws EncoderException,
+  NullPointerException {
+    return encoder.encode(entry);
+  }
+
 }

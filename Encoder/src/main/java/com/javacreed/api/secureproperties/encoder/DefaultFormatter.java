@@ -147,4 +147,23 @@ public class DefaultFormatter implements Formatter {
 
     return formatted.toString();
   }
+
+  @Override
+  public PlainTextNameValuePropertyEntry parse(final String formatted) throws EncoderException, NullPointerException {
+    final String[] parts = formatted.split(",", 3);
+
+    if (parts[1] == null || parts[1].matches("\\d+") == false) {
+      // TODO: throw a proper exception
+      throw new EncoderException("");
+    }
+
+    final int nameLength = Integer.parseInt(parts[1]);
+    final String name = parts[2].substring(0, nameLength);
+
+    final int valueIndex = parts[2].indexOf(",", nameLength + 1);
+    final String value = parts[2].substring(valueIndex + 1);
+
+    return new PlainTextNameValuePropertyEntry(name, value);
+  }
+
 }

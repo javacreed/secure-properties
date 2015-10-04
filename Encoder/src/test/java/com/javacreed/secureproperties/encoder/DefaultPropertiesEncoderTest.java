@@ -21,6 +21,7 @@ package com.javacreed.secureproperties.encoder;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -31,6 +32,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.javacreed.api.secureproperties.encoder.DecodedProperties;
 import com.javacreed.api.secureproperties.encoder.DefaultPropertiesEncoder;
 import com.javacreed.api.secureproperties.encoder.EncodedProperties;
 import com.javacreed.api.secureproperties.encoder.PropertiesEncoder;
@@ -41,7 +43,20 @@ import com.javacreed.api.secureproperties.writer.io.LinePropertyEntryWriter;
 public class DefaultPropertiesEncoderTest {
 
   @Test
-  public void test() throws Exception {
+  public void testDecode() throws IOException {
+    final List<PropertyEntry> properties = ReaderPropertyParser.readAndClose(getClass().getResourceAsStream(
+        "/samples/properties/file.002.properties"));
+
+    final PropertiesEncoder propertiesDecoder = new DefaultPropertiesEncoder();
+    final DecodedProperties decoded = propertiesDecoder.decode(properties);
+    Assert.assertNotNull(decoded);
+    Assert.assertTrue(decoded.wereDecoded());
+    Assert.assertEquals(1, decoded.getNumberOfDecodedProperties());
+    Assert.assertNotNull(decoded.getEntries());
+  }
+
+  @Test
+  public void testEncode() throws Exception {
     final String path = "target/test.samples.properties";
     Files.copy(getClass().getResourceAsStream("/samples/properties/file.001.properties"), Paths.get(path),
         StandardCopyOption.REPLACE_EXISTING);

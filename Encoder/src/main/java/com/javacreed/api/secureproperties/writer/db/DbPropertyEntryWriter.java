@@ -34,8 +34,8 @@ import com.javacreed.api.secureproperties.model.DefaultValueLabel;
 import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
-import com.javacreed.api.secureproperties.model.PropertyEntry;
 import com.javacreed.api.secureproperties.model.ValueLabel;
+import com.javacreed.api.secureproperties.utils.EntryWriterUtils;
 import com.javacreed.api.secureproperties.utils.ExceptionsUtils;
 import com.javacreed.api.secureproperties.writer.AbstractPropertyEntryWriter;
 
@@ -51,6 +51,54 @@ import com.javacreed.api.secureproperties.writer.AbstractPropertyEntryWriter;
  */
 @NotThreadSafe
 public class DbPropertyEntryWriter extends AbstractPropertyEntryWriter {
+
+  public static class Builder {
+
+    /** */
+    private ValueLabel valueLabel = new DefaultValueLabel();
+
+    /** */
+    private final DataSource dataSource;
+
+    /** */
+    private String tableName = DbPropertyEntryWriter.DEFAULT_TABLE_NAME;
+
+    /** */
+    private String propertyNameColumnName = DbPropertyEntryWriter.DEFAULT_PROPERTY_NAME_COLUMN_NAME;
+
+    /** */
+    private String propertyValueColumnName = DbPropertyEntryWriter.DEFAULT_PROPERTY_NAME_COLUMN_VALUE;
+
+    public Builder(final DataSource dataSource) throws NullPointerException {
+      this.dataSource = Objects.requireNonNull(dataSource);
+    }
+
+    public DbPropertyEntryWriter build() {
+      return new DbPropertyEntryWriter(dataSource, valueLabel, tableName, propertyNameColumnName,
+          propertyValueColumnName);
+    }
+
+    public Builder setPropertyNameColumnName(final String propertyNameColumnName) throws NullPointerException {
+      this.propertyNameColumnName = Objects.requireNonNull(propertyNameColumnName);
+      return this;
+    }
+
+    public Builder setPropertyValueColumnName(final String propertyValueColumnName) throws NullPointerException {
+      this.propertyValueColumnName = Objects.requireNonNull(propertyValueColumnName);
+      return this;
+    }
+
+    public Builder setTableName(final String tableName) throws NullPointerException {
+      this.tableName = Objects.requireNonNull(tableName);
+      return this;
+    }
+
+    public Builder setValueLabel(final ValueLabel valueLabel) throws NullPointerException {
+      this.valueLabel = Objects.requireNonNull(valueLabel);
+      return this;
+    }
+
+  }
 
   /**
    *
@@ -103,6 +151,12 @@ public class DbPropertyEntryWriter extends AbstractPropertyEntryWriter {
   /** */
   public static final String DEFAULT_TABLE_NAME = "properties";
 
+  /** */
+  public static final String DEFAULT_PROPERTY_NAME_COLUMN_NAME = "name";
+
+  /** */
+  public static final String DEFAULT_PROPERTY_NAME_COLUMN_VALUE = "value";
+
   /**
    *
    * @param dataSource
@@ -111,17 +165,7 @@ public class DbPropertyEntryWriter extends AbstractPropertyEntryWriter {
    */
   public static void write(final DataSource dataSource, final EncodedProperties properties) throws Exception {
     final DbPropertyEntryWriter dbpew = new DbPropertyEntryWriter(dataSource);
-
-    // TODO: this should be moved elsewhere
-    try {
-      dbpew.begin();
-      for (final PropertyEntry entry : properties.getEntries()) {
-        dbpew.write(entry);
-      }
-      dbpew.commit();
-    } catch (final Exception e) {
-      dbpew.failed(e);
-    }
+    EntryWriterUtils.write(dbpew, properties);
   }
 
   /** */
@@ -132,6 +176,12 @@ public class DbPropertyEntryWriter extends AbstractPropertyEntryWriter {
 
   /** */
   private final String tableName;
+
+  /** */
+  private final String propertyNameColumnName;
+
+  /** */
+  private final String propertyValueColumnName;
 
   /** */
   private Connection connection;
@@ -152,7 +202,8 @@ public class DbPropertyEntryWriter extends AbstractPropertyEntryWriter {
    * @throws NullPointerException
    */
   public DbPropertyEntryWriter(final DataSource dataSource, final String tableName) throws NullPointerException {
-    this(dataSource, new DefaultValueLabel(), tableName);
+    this(dataSource, new DefaultValueLabel(), tableName, DbPropertyEntryWriter.DEFAULT_PROPERTY_NAME_COLUMN_NAME,
+        DbPropertyEntryWriter.DEFAULT_PROPERTY_NAME_COLUMN_VALUE);
   }
 
   /**
@@ -160,13 +211,17 @@ public class DbPropertyEntryWriter extends AbstractPropertyEntryWriter {
    * @param dataSource
    * @param valueLabel
    * @param tableName
+   * @param propertyNameColumnName
+   * @param propertyValueColumnName
    * @throws NullPointerException
    */
-  public DbPropertyEntryWriter(final DataSource dataSource, final ValueLabel valueLabel, final String tableName)
-      throws NullPointerException {
+  public DbPropertyEntryWriter(final DataSource dataSource, final ValueLabel valueLabel, final String tableName,
+      final String propertyNameColumnName, final String propertyValueColumnName) throws NullPointerException {
     this.dataSource = Objects.requireNonNull(dataSource);
     this.valueLabel = Objects.requireNonNull(valueLabel);
     this.tableName = Objects.requireNonNull(tableName);
+    this.propertyNameColumnName = Objects.requireNonNull(propertyNameColumnName);
+    this.propertyValueColumnName = Objects.requireNonNull(propertyValueColumnName);
     registerHandlers();
   }
 

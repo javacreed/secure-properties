@@ -30,5 +30,6 @@ public class AesCipherStringEncoderTest {
   public void test() {
     final CipherStringEncoder encoder = new CipherStringEncoder();
     Assert.assertEquals("a1c4054f59827c94cd1e1693c300a569", encoder.encode("hello"));
+    Assert.assertEquals("hello", encoder.decode("a1c4054f59827c94cd1e1693c300a569"));
   }
 }

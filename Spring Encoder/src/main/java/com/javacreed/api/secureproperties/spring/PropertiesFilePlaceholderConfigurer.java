@@ -19,74 +19,63 @@
  */
 package com.javacreed.api.secureproperties.spring;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.core.io.Resource;
 
-import com.javacreed.api.secureproperties.encoder.EncodedProperties;
-import com.javacreed.api.secureproperties.encoder.EncoderException;
-import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
-import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
-import com.javacreed.api.secureproperties.model.PropertyEntry;
-import com.javacreed.api.secureproperties.parser.io.ReaderPropertyParser;
-import com.javacreed.api.secureproperties.writer.io.LinePropertyEntryWriter;
+import com.javacreed.api.secureproperties.cipher.CipherFactory;
+import com.javacreed.api.secureproperties.encoder.PropertiesEncoder;
+import com.javacreed.api.secureproperties.parser.io.LinePropertyEntryParser;
+import com.javacreed.api.secureproperties.properties.PropertiesFile;
 
 /**
  * TODO: we need to make this configurable
  */
-public class PropertiesFilePlaceholderConfigurer extends AbstractPropertyPlaceholderConfigurer {
+public class PropertiesFilePlaceholderConfigurer extends PropertyPlaceholderConfigurer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesFilePlaceholderConfigurer.class);
 
+  private final PropertiesFile propertiesFile = new PropertiesFile();
+
   @Override
   protected String convertProperty(final String propertyName, final String propertyValue) {
-    if (isEncrypted(propertyValue)) {
-      try {
-        PropertiesFilePlaceholderConfigurer.LOGGER.debug("Decoding property value: '{}'", propertyValue);
-        final NameValuePropertyEntry decoded = (NameValuePropertyEntry) propertyDecoder
-            .decode(new EncodedNameValuePropertyEntry(propertyName, propertyValue.substring(5)));
-        return super.convertPropertyValue(decoded.getValue());
-      } catch (final Exception e) {
-        throw EncoderException.launder("Failed to decode value", e);
-      }
-    }
-
-    return super.convertPropertyValue(propertyValue);
+    return super.convertPropertyValue(propertiesFile.convertProperty(propertyName, propertyValue));
   }
 
   private Resource[] encodeProperties(final Resource[] modifiableLocations) throws Exception {
     for (final Resource resource : modifiableLocations) {
       final File file = resource.getFile().getAbsoluteFile();
-      PropertiesFilePlaceholderConfigurer.LOGGER.debug("Processing properties file: {}", file);
-
-      final List<PropertyEntry> properties = ReaderPropertyParser.readAndClose(file);
-      if (PropertiesFilePlaceholderConfigurer.LOGGER.isDebugEnabled()) {
-        PropertiesFilePlaceholderConfigurer.LOGGER.debug("File: {} has {} entries", file.getName(), properties.size());
-        for (final PropertyEntry entry : properties) {
-          PropertiesFilePlaceholderConfigurer.LOGGER.debug("  >> {}", entry);
-        }
-      }
-
-      PropertiesFilePlaceholderConfigurer.LOGGER.debug("Encoding properties");
-      final EncodedProperties encodedProperties = encoder.encode(properties);
-      PropertiesFilePlaceholderConfigurer.LOGGER.debug("Properties encoding complete");
-
-      if (encodedProperties.wereEncoded()) {
-        PropertiesFilePlaceholderConfigurer.LOGGER.debug("Writing properties to file: {}", file);
-        LinePropertyEntryWriter.writeAndClose(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file),
-            "UTF-8")), encodedProperties);
-      } else {
-        PropertiesFilePlaceholderConfigurer.LOGGER.debug("No properties required encoding");
+      if (file.isFile()) {
+        PropertiesFilePlaceholderConfigurer.LOGGER.debug("Processing properties file: {}", file);
+        propertiesFile.loadProperties(file);
       }
     }
 
     return modifiableLocations;
+  }
+
+  public void setCipherFactory(final CipherFactory cipherFactory) {
+    propertiesFile.setCipherFactory(cipherFactory);
+  }
+
+  public void setEncoder(final PropertiesEncoder encoder) throws NullPointerException {
+    this.propertiesFile.setEncoder(encoder);
+  }
+
+  public void setKey(final String key) {
+    this.propertiesFile.setKey(key);
+  }
+
+  public void setLineParser(final LinePropertyEntryParser lineParser) throws NullPointerException {
+    propertiesFile.setLineParser(lineParser);
+  }
+
+  public void setLineParserLabels(final String plainTextLabel, final String encodedLabel) throws NullPointerException,
+  IllegalArgumentException {
+    propertiesFile.setLineParserLabels(plainTextLabel, encodedLabel);
   }
 
   public void setModifiableLocations(final Resource[] modifiableLocations) throws Exception {

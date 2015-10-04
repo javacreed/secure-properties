@@ -17,13 +17,13 @@
  * limitations under the License.
  * #L%
  */
-package com.javacreed.secureproperties.decoder;
+package com.javacreed.secureproperties.encoder;
 
 import org.junit.Test;
 
-import com.javacreed.api.secureproperties.decoder.DefaultPropertyDecoder;
-import com.javacreed.api.secureproperties.decoder.InvalidEncodedValueException;
-import com.javacreed.api.secureproperties.decoder.PropertyDecoder;
+import com.javacreed.api.secureproperties.encoder.DefaultPropertyEncoder;
+import com.javacreed.api.secureproperties.encoder.InvalidEncodedValueException;
+import com.javacreed.api.secureproperties.encoder.PropertyEncoder;
 import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
 
 /**
@@ -31,7 +31,7 @@ import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
  * the property name so that these are not easily swapped and to prevent side channels attacks by learning the password
  * just by observing the encoded value.
  */
-public class PropertyDecoderFailTest {
+public class PropertyEncoderFailTest {
 
   /**
    * Tests the decoding of a property where its name is changed following the encoding. The encoded value is bound with
@@ -44,7 +44,7 @@ public class PropertyDecoderFailTest {
         "incorrect property name",
         "5a4a9bb633d7f624197a0bf6efeae502f9e32762c5598f1329f79ba41fac663b41e293d410ca5d0d20e91ffa8a3a3b3525bfe00fc672872125dcc833834151c2");
 
-    final PropertyDecoder decoder = new DefaultPropertyDecoder();
-    decoder.decode(envPropertyEntry);
+    final PropertyEncoder encoder = new DefaultPropertyEncoder();
+    encoder.decode(envPropertyEntry);
   }
 }

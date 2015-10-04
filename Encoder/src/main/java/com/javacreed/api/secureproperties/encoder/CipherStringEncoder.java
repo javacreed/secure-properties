@@ -19,26 +19,37 @@
  */
 package com.javacreed.api.secureproperties.encoder;
 
-import com.javacreed.api.secureproperties.adapter.AbstractCipherBase;
+import java.util.Objects;
+
 import com.javacreed.api.secureproperties.cipher.CipherFactory;
 import com.javacreed.api.secureproperties.cipher.pbe.AesCipherFactory;
 import com.javacreed.api.secureproperties.utils.CipherUtils;
 
 /**
- * Cipher based string encoder and default implementation of the {@link StringEncoder} interface.
+ * Cipher based string encoder and decoder and default implementation of the {@link StringEncoder} interface.
  *
- * The encoding process is delegated to the {@link CipherUtils#encode(String, CipherFactory)} static method
+ * The encoding process is delegated to the {@link CipherUtils#decode(String, CipherFactory)} and
+ * {@link CipherUtils#encode(String, CipherFactory)} static methods
  *
  * @author Albert Attard
+ *
+ * @see CipherUtils
  */
-public class CipherStringEncoder extends AbstractCipherBase implements StringEncoder {
+public class CipherStringEncoder implements StringEncoder {
+
+  /**
+   * The cipher factory which is responsible from creating new ciphers
+   */
+  protected final CipherFactory cipherFactory;
 
   /**
    * Creates an instance of the this class using the default configuration.
    *
    * @see AesCipherFactory
    */
-  public CipherStringEncoder() {}
+  public CipherStringEncoder() {
+    this(new AesCipherFactory());
+  }
 
   /**
    * Creates an instance of this class using the given cipher factory
@@ -49,7 +60,7 @@ public class CipherStringEncoder extends AbstractCipherBase implements StringEnc
    *           if the given cipher factory is {@code null}
    */
   public CipherStringEncoder(final CipherFactory cipherFactory) throws NullPointerException {
-    super(cipherFactory);
+    this.cipherFactory = Objects.requireNonNull(cipherFactory);
   }
 
   /**
@@ -64,7 +75,12 @@ public class CipherStringEncoder extends AbstractCipherBase implements StringEnc
    * @see AesCipherFactory
    */
   public CipherStringEncoder(final String key) throws NullPointerException {
-    super(key);
+    this(new AesCipherFactory(key));
+  }
+
+  @Override
+  public String decode(final String plainText) throws EncoderException {
+    return CipherUtils.decode(plainText, cipherFactory);
   }
 
   @Override

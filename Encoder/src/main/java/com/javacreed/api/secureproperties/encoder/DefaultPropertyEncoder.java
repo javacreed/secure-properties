@@ -23,6 +23,9 @@ import java.util.Objects;
 
 import net.jcip.annotations.Immutable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.javacreed.api.secureproperties.cipher.CipherFactory;
 import com.javacreed.api.secureproperties.cipher.pbe.AesCipherFactory;
 import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
@@ -37,6 +40,9 @@ import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
  */
 @Immutable
 public class DefaultPropertyEncoder implements PropertyEncoder {
+
+  /** The class logger */
+  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultPropertyEncoder.class);
 
   /** Formatter used to format the property before encoding it */
   private final Formatter formatter;
@@ -120,8 +126,23 @@ public class DefaultPropertyEncoder implements PropertyEncoder {
   }
 
   @Override
+  public PlainTextNameValuePropertyEntry decode(final EncodedNameValuePropertyEntry entry) throws EncoderException,
+      NullPointerException {
+    DefaultPropertyEncoder.LOGGER.debug("Decoding property: {}", entry);
+    final EncodedNameValuePropertyEntry envpEntry = entry;
+    final String decoded = stringEncoder.decode(envpEntry.getValue());
+    final PlainTextNameValuePropertyEntry nvpEntry = formatter.parse(decoded);
+
+    if (nvpEntry.getName().equals(envpEntry.getName()) == false) {
+      throw new InvalidEncodedValueException();
+    }
+
+    return nvpEntry;
+  }
+
+  @Override
   public EncodedNameValuePropertyEntry encode(final PlainTextNameValuePropertyEntry entry) throws NullPointerException,
-      EncoderException {
+  EncoderException {
     final String formatted = formatter.format(entry);
     final String encoded = stringEncoder.encode(formatted);
     return new EncodedNameValuePropertyEntry(entry.getName(), encoded);

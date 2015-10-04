@@ -22,11 +22,32 @@ package com.javacreed.api.secureproperties.encoder;
 import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
 
 /**
- * Formats an instance of plain text property entry into a single string. The formatting does not necessary obfuscate
- * the original message. It basically transforms the given plain text property entry into one string. The output of this
- * class is usually used as an input by the {@link StringEncoder} class
+ * Formats an instance of {@link PlainTextNameValuePropertyEntry} into a single string. The formatting does not
+ * necessary obfuscate the original message. It basically transforms the given plain text property entry into one
+ * string. The output of this class is usually used as an input by the {@link StringEncoder} class.
+ *
+ * The output of one method can be used as an input of the other method to produce an equivalent object.
+ *
+ * <pre>
+ * PlainTextNameValuePropertyEntry propertyA = ...
+ * String formatted = format(propertyA);
+ * PlainTextNameValuePropertyEntry propertyB = parse(formatted);
+ * Assert.assertEquals(propertyA, propertyB);
+ * </pre>
+ *
+ * And same applies to the opposite order
+ *
+ * <pre>
+ * String formattedA = ...
+ * PlainTextNameValuePropertyEntry property = parse(formattedA);
+ * String formattedB = format(property);
+ * Assert.assertEquals(formattedA, formattedB);
+ * </pre>
  *
  * @author Albert Attard
+ *
+ * @see PlainTextNameValuePropertyEntry
+ * @see StringEncoder
  */
 public interface Formatter {
 
@@ -40,4 +61,17 @@ public interface Formatter {
    *           if the given {@code propertyEntry} is {@code null}
    */
   String format(PlainTextNameValuePropertyEntry propertyEntry) throws NullPointerException;
+
+  /**
+   * Parses the given {@code formatted} into a {@link PlainTextNameValuePropertyEntry}.
+   *
+   * @param formatted
+   *          the formatted property value (which cannot be {@code null})
+   * @return an instance of the {@link PlainTextNameValuePropertyEntry}
+   * @throws EncoderException
+   *           if the given {@code formatted} property value cannot be parsed
+   * @throws NullPointerException
+   *           if the given {@code formatted} property value is {@code null}
+   */
+  PlainTextNameValuePropertyEntry parse(String formatted) throws EncoderException, NullPointerException;
 }

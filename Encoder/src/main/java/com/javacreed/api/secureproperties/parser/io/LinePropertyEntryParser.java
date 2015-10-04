@@ -24,5 +24,13 @@ import com.javacreed.api.secureproperties.parser.PropertyEntryParseException;
 
 public interface LinePropertyEntryParser {
 
+  String convertEncodedValue(String value);
+
+  String convertPlainTextValue(String value);
+
+  boolean isEncodedValue(String value);
+
+  boolean isPlainTextValue(String value);
+
   PropertyEntry parse(String line) throws PropertyEntryParseException;
 }

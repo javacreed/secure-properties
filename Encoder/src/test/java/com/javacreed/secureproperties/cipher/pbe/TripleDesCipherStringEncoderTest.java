@@ -37,5 +37,6 @@ public class TripleDesCipherStringEncoderTest {
   public void test() {
     final CipherStringEncoder encoder = new CipherStringEncoder(new TripleDesCipherFactory());
     Assert.assertEquals("afba0dbd18e6a33d", encoder.encode("hello"));
+    Assert.assertEquals("hello", encoder.decode("afba0dbd18e6a33d"));
   }
 }

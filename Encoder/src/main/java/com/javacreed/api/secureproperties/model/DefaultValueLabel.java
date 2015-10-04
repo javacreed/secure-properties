@@ -31,10 +31,10 @@ import net.jcip.annotations.Immutable;
 public class DefaultValueLabel implements ValueLabel {
 
   /** */
-  private final String plainTextPrefix;
+  private final String plainTextLabel;
 
   /** */
-  private final String encodedPrefix;
+  private final String encodedLabel;
 
   /**
    *
@@ -45,29 +45,33 @@ public class DefaultValueLabel implements ValueLabel {
 
   /**
    *
-   * @param plainTextPrefix
-   * @param encodedPrefix
+   * @param plainTextLabel
+   * @param encodedLabel
    * @throws NullPointerException
    *           if any of the given properties is {@code null}
    */
-  public DefaultValueLabel(final String plainTextPrefix, final String encodedPrefix) throws NullPointerException {
-    this.plainTextPrefix = Objects.requireNonNull(plainTextPrefix);
-    this.encodedPrefix = Objects.requireNonNull(encodedPrefix);
+  public DefaultValueLabel(final String plainTextLabel, final String encodedLabel) throws NullPointerException {
+    this.plainTextLabel = Objects.requireNonNull(plainTextLabel);
+    this.encodedLabel = Objects.requireNonNull(encodedLabel);
+
+    if (plainTextLabel.equals(encodedLabel)) {
+      throw new IllegalArgumentException("The plain test label cannot be the same as the encoded label");
+    }
   }
 
   @Override
   public String getEncodedLabel() {
-    return encodedPrefix;
+    return encodedLabel;
   }
 
   @Override
   public String getPlainTextLabel() {
-    return plainTextPrefix;
+    return plainTextLabel;
   }
 
   @Override
   public String toString() {
-    return plainTextPrefix + "/" + encodedPrefix;
+    return plainTextLabel + "/" + encodedLabel;
   }
 
 }

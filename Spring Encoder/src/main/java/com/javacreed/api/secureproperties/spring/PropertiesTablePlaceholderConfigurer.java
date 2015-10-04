@@ -20,37 +20,28 @@
 package com.javacreed.api.secureproperties.spring;
 
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Objects;
 import java.util.Properties;
 
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
-import com.javacreed.api.secureproperties.encoder.EncodedProperties;
-import com.javacreed.api.secureproperties.model.PropertyEntry;
-import com.javacreed.api.secureproperties.parser.db.ResultSetPropertyParser;
-import com.javacreed.api.secureproperties.writer.db.DbPropertyEntryWriter;
+import com.javacreed.api.secureproperties.cipher.CipherFactory;
+import com.javacreed.api.secureproperties.encoder.PropertiesEncoder;
+import com.javacreed.api.secureproperties.properties.PropertiesTable;
 
 /**
  *
  * @author Albert Attard
  */
-public class PropertiesTablePlaceholderConfigurer extends AbstractPropertyPlaceholderConfigurer {
+public class PropertiesTablePlaceholderConfigurer extends PropertyPlaceholderConfigurer {
 
   /** */
   private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesTablePlaceholderConfigurer.class);
 
-  /** */
-  private final DataSource dataSource;
-
-  private String tableName = "properties";
-
-  /** */
-  private String query = "SELECT * FROM `properties`";
+  private final PropertiesTable properties = new PropertiesTable();
 
   /**
    *
@@ -58,51 +49,40 @@ public class PropertiesTablePlaceholderConfigurer extends AbstractPropertyPlaceh
    * @throws NullPointerException
    */
   public PropertiesTablePlaceholderConfigurer(final DataSource dataSource) throws NullPointerException {
-    this.dataSource = Objects.requireNonNull(dataSource);
+    this.properties.setDataSource(dataSource);
   }
 
   @Override
   protected void loadProperties(final Properties properties) throws IOException {
-    List<PropertyEntry> list;
-    try {
-      list = ResultSetPropertyParser.readAndClose(dataSource, query);
-    } catch (final SQLException e) {
-      throw new IOException("Failed to read the properties", e);
-    }
-    if (PropertiesTablePlaceholderConfigurer.LOGGER.isDebugEnabled()) {
-      PropertiesTablePlaceholderConfigurer.LOGGER.debug("Query: {} returned {} entries", query, list.size());
-      for (final PropertyEntry entry : list) {
-        PropertiesTablePlaceholderConfigurer.LOGGER.debug("  >> {}", entry);
-      }
-    }
-
-    PropertiesTablePlaceholderConfigurer.LOGGER.debug("Encoding properties");
-    final EncodedProperties encodedProperties = encoder.encode(list);
-    PropertiesTablePlaceholderConfigurer.LOGGER.debug("Properties encoding complete");
-
-    if (encodedProperties.wereEncoded()) {
-      PropertiesTablePlaceholderConfigurer.LOGGER.debug("Writing properties to table: {}", tableName);
-      try {
-        DbPropertyEntryWriter.write(dataSource, encodedProperties);
-      } catch (final Exception e) {
-        throw new IOException("Failed to write the properties", e);
-      }
-    } else {
-      PropertiesTablePlaceholderConfigurer.LOGGER.debug("No properties required encoding");
-    }
+    this.properties.loadProperties(properties);
   }
 
-  public void setQuery(final String query) throws NullPointerException {
-    this.query = Objects.requireNonNull(query);
+  public void setCipherFactory(final CipherFactory cipherFactory) throws NullPointerException {
+    properties.setCipherFactory(cipherFactory);
   }
 
-  /**
-   *
-   * @param tableName
-   * @throws NullPointerException
-   */
-  public void setTableName(final String tableName) throws NullPointerException {
-    this.tableName = Objects.requireNonNull(tableName);
-    setQuery("SELECT * FROM `" + tableName + "`");
+  public void setDataSource(final DataSource dataSource) throws NullPointerException {
+    properties.setDataSource(dataSource);
   }
+
+  public void setEncoder(final PropertiesEncoder encoder) throws NullPointerException {
+    properties.setEncoder(encoder);
+  }
+
+  public void setKey(final String key) throws NullPointerException {
+    properties.setKey(key);
+  }
+
+  public void setNameColumnName(final String nameColumnName) {
+    properties.setNameColumnName(nameColumnName);
+  }
+
+  public void setTableName(final String tableName) {
+    properties.setTableName(tableName);
+  }
+
+  public void setValueColumnName(final String valueColumnName) {
+    properties.setValueColumnName(valueColumnName);
+  }
+
 }

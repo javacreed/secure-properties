@@ -20,6 +20,7 @@
 package com.javacreed.api.secureproperties.encoder;
 
 import com.javacreed.api.secureproperties.model.EncodedNameValuePropertyEntry;
+import com.javacreed.api.secureproperties.model.NameValuePropertyEntry;
 import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
 
 /**
@@ -28,6 +29,19 @@ import com.javacreed.api.secureproperties.model.PlainTextNameValuePropertyEntry;
  * @author Albert Attard
  */
 public interface PropertyEncoder {
+
+  /**
+   * TODO: should we assume that the decoder will always accept and return a {@link NameValuePropertyEntry}? The other
+   * options are comments which I do not think they will need encoding. We are casting the return value at the moment
+   * which is not a good idea.
+   *
+   * @param entry
+   * @return
+   * @throws EncoderException
+   * @throws NullPointerException
+   */
+  public PlainTextNameValuePropertyEntry decode(EncodedNameValuePropertyEntry entry) throws EncoderException,
+  NullPointerException;
 
   /**
    * Encodes a plain text property into an encoded property entry
@@ -42,4 +56,5 @@ public interface PropertyEncoder {
    */
   public EncodedNameValuePropertyEntry encode(PlainTextNameValuePropertyEntry entry) throws EncoderException,
       NullPointerException;
+
 }

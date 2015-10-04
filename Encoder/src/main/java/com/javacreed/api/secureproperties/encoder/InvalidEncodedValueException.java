@@ -17,9 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package com.javacreed.api.secureproperties.decoder;
-
-import com.javacreed.api.secureproperties.encoder.EncoderException;
+package com.javacreed.api.secureproperties.encoder;
 
 /**
  */
